@@ -1,0 +1,14 @@
+{
+  "name": "mini-app",
+  "version": "1.0.0",
+  "description": "Demo app for Concordant",
+  "main": "src/main.ts",
+  "scripts": {
+    "test": "it syncs!"
+  },
+  "author": "Annette Bieniusa",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  }
+}

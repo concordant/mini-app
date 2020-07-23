@@ -1,10 +1,10 @@
 import crdtlib = require('c-crdtlib');
-var crdtl = crdtlib.crdtlib;
+let crdtl = crdtlib.crdtlib;
 
-var env = new crdtl.utils.SimpleEnvironment("myClientId");
+let env = crdtl.utils.SimpleEnvironment_init_yu9ib0$("myClientId");
 
-var cntr = new crdtl.crdt.PNCounter();
-var x:number = 0;
+let cntr = crdtl.crdt.PNCounter_init_u1d9q$();
+let x:number = 0;
 
 // labels
 var cntlabel_local = document.getElementById('cnt_local'); // find the HTML element in the DOM
@@ -16,17 +16,19 @@ export function incrLabel() {
       cntlabel_local.textContent = (++x).toString()
     }
     if (cntlabel_crdt) {
-        cntr.increment(env.getNewTimestamp(), 1);
+        var delta = cntr.increment(1, env.getNewTimestamp());
+        cntr.merge(delta);
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }
 
 export function decrLabel() {
-    // this function is executed whenever the user clicks the increment button
+    // this function is executed whenever the user clicks the decrement button
     if (cntlabel_local)
       cntlabel_local.textContent = (--x).toString()
     if (cntlabel_crdt) {
-        cntr.decrement(env.getNewTimestamp(), 1);
+        var delta = cntr.decrement(1, env.getNewTimestamp());
+        cntr.merge(delta);
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }

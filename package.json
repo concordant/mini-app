@@ -4,11 +4,17 @@
   "description": "Demo app for Concordant",
   "main": "src/main.ts",
   "scripts": {
-    "test": "it syncs!"
+    "build-tsc": "tsc && browserify src/main.js --standalone myBundle -o dist/bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist"
   },
   "author": "Annette Bieniusa",
-  "license": "ISC",
+  "license": "MIT",
+  "dependencies": {
+    "c-crdtlib": "git+https://gitlab.inria.fr/concordant/software/packages/npm/c-crdtlib.git"
+  },
   "devDependencies": {
+    "browserify": "^16.5.1",
     "typescript": "^3.9.7"
   }
 }

@@ -1,6 +1,8 @@
 import crdtlib = require('c-crdtlib');
 var crdtl = crdtlib.crdtlib;
 
+var env = new crdtl.utils.SimpleEnvironment("myClientId");
+
 var cntr = new crdtl.crdt.PNCounter();
 var x:number = 0;
 
@@ -14,7 +16,7 @@ export function incrLabel() {
       cntlabel_local.textContent = (++x).toString()
     }
     if (cntlabel_crdt) {
-        cntr.increment();
+        cntr.increment(env.getNewTimestamp(), 1);
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }
@@ -24,7 +26,7 @@ export function decrLabel() {
     if (cntlabel_local)
       cntlabel_local.textContent = (--x).toString()
     if (cntlabel_crdt) {
-        cntr.decrement();
+        cntr.decrement(env.getNewTimestamp(), 1);
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }

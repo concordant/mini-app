@@ -11,6 +11,12 @@ You need an installation of the `npm` JavaScript package manager.
 - The `browserify` packages bundles all npm modules required such that you only need to include the bundle in the html page using one `<script>` tag.
 - Further, the `typescript` package allows to transpile Typescript code to JavaScript.
 
+To install these packages use the following command:
+
+```
+$ npm install
+```
+
 The different steps for transpiling and bundling are combined in one build script:
 
 ```

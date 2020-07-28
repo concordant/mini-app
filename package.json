@@ -2,7 +2,7 @@
   "name": "mini-app",
   "version": "1.0.0",
   "description": "Demo app for Concordant",
-  "main": "src/main.ts",
+  "main": "src/main.js",
   "scripts": {
     "build-tsc": "tsc && browserify src/main.js --standalone myBundle -o dist/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,7 @@
   "author": "Annette Bieniusa",
   "license": "MIT",
   "dependencies": {
-    "c-crdtlib": "git+https://gitlab.inria.fr/concordant/software/packages/npm/c-crdtlib.git"
+    "c-crdtlib": "git+ssh://git@gitlab.inria.fr/concordant/software/packages/npm/c-crdtlib.git"
   },
   "devDependencies": {
     "browserify": "^16.5.1",

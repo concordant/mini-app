@@ -1,7 +1,7 @@
 import crdtlib = require('c-crdtlib');
 let crdtl = crdtlib.crdtlib;
 
-let env = crdtl.utils.SimpleEnvironment_init_yu9ib0$("myClientId");
+let env = new crdtl.utils.SimpleEnvironment("myClientId");
 let cntr = new crdtl.crdt.PNCounter();
 
 // labels

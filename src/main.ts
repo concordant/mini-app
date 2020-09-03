@@ -1,5 +1,4 @@
-import crdtlib = require('c-crdtlib');
-let crdtl = crdtlib.crdtlib;
+import { crdtlib as crdtl } from 'c-crdtlib';
 
 let env = new crdtl.utils.SimpleEnvironment("myClientId");
 let cntr = new crdtl.crdt.PNCounter();

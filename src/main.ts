@@ -1,7 +1,7 @@
-import crdtlib = require('c-crdtlib');
-let crdtl = crdtlib.crdtlib;
+import { crdtlib as crdtl } from 'c-crdtlib';
 
-let env = new crdtl.utils.SimpleEnvironment("myClientId");
+let env = new crdtl.utils.SimpleEnvironment(
+    new crdtl.utils.DCUId("myClientId"));
 let cntr = new crdtl.crdt.PNCounter();
 
 // labels
@@ -22,3 +22,40 @@ export function decrLabel() {
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }
+
+import { GList } from './RGASimpleList';
+
+const listsRoot: HTMLElement | null =
+    document.getElementById('listsRoot');
+if (listsRoot == null){
+    throw new Error("root element is missing in DOM");
+}
+
+let envA = new crdtl.utils.SimpleEnvironment(
+    new crdtl.utils.DCUId("myClientA"));
+var glA = new GList(envA);
+
+let envB = new crdtl.utils.SimpleEnvironment(
+        new crdtl.utils.DCUId("myClientB"));
+var glB = new GList(envB);
+
+// propagate from A to B (full state)
+let AtoB = document.createElement("input");
+AtoB.type = "button";
+AtoB.value = "↓↓↓↓↓";
+AtoB.addEventListener("click", (e:Event) => glB.merge(glA.getState()));
+
+// propagate from B to A (delta)
+let BtoA = document.createElement("input");
+BtoA.type = "button";
+BtoA.value = "↑↑↑↑↑";
+BtoA.addEventListener("click", (e:Event) => {
+    let aVV = glA.getState().vv;
+    let delta = glB.getDeltaFrom(aVV);
+    glA.merge(delta);
+})
+
+listsRoot.appendChild(glA.render());
+listsRoot.appendChild(AtoB);
+listsRoot.appendChild(BtoA);
+listsRoot.appendChild(glB.render());

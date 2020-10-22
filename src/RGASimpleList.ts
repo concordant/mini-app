@@ -99,8 +99,8 @@ export class GList{
      * @param value - The content of the line
      */
     public append(value: string){
-        let ts = this.env.getNewTimestamp();
-        this.env.updateStateTS(ts);
+        let ts = this.env.tick();
+        this.env.updateTs(ts);
         this.elementsRGA.insertAt(this.elementsRGA.get().size,
                                   value,
                                   ts);
@@ -116,8 +116,8 @@ export class GList{
     public insertAt(index: number, value: string){
         let lis = this.gul.children;
         let ref = index < lis.length ? lis[index] : null;
-        let ts = this.env.getNewTimestamp();
-        this.env.updateStateTS(ts);
+        let ts = this.env.tick();
+        this.env.updateTs(ts);
         this.elementsRGA.insertAt(index,
                                   value,
                                   ts);
@@ -167,8 +167,8 @@ export class GList{
         let index = Array.prototype.indexOf.call(
             parentList.children, line);
 
-        let ts = this.env.getNewTimestamp();
-        this.env.updateStateTS(ts);
+        let ts = this.env.tick();
+        this.env.updateTs(ts);
         this.elementsRGA.removeAt(index,
                                   ts);
         line.remove();
@@ -209,7 +209,7 @@ export class GList{
      */
     public getState(): {delta: crdtlib.crdt.RGA<string>,
                         vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsRGA, vv: this.env.getCurrentState()};
+        return {delta: this.elementsRGA, vv: this.env.getState()};
     }
 
     /**
@@ -221,10 +221,10 @@ export class GList{
      * (same structure as {@link RGASimpleList.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.Delta<crdtlib.crdt.RGA<string>>,
+    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA<string>>,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsRGA.generateDelta(vv),
-                vv: this.env.getCurrentState()};
+                vv: this.env.getState()};
     }
 
     /**
@@ -235,10 +235,10 @@ export class GList{
      * or {@link RGASimpleList.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.Delta<crdtlib.crdt.RGA<string>>,
+                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA<string>>,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsRGA.merge(delta.delta);
-        this.env.updateStateVV(delta.vv);
+        this.env.updateVv(delta.vv);
         this.render();
     }
 }

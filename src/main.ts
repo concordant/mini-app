@@ -1,7 +1,7 @@
 import { crdtlib as crdtl } from 'c-crdtlib';
 
 let env = new crdtl.utils.SimpleEnvironment(
-    new crdtl.utils.DCUId("myClientId"));
+    new crdtl.utils.ClientUId("myClientId"));
 let cntr = new crdtl.crdt.PNCounter();
 
 // labels
@@ -10,7 +10,7 @@ var cntlabel_crdt = document.getElementById('cnt_crdt'); // find the HTML elemen
 export function incrLabel() {
     // this function is executed whenever the user clicks the increment button
     if (cntlabel_crdt) {
-        cntr.increment(1, env.getNewTimestamp());
+        cntr.increment(1, env.tick());
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }
@@ -18,7 +18,7 @@ export function incrLabel() {
 export function decrLabel() {
     // this function is executed whenever the user clicks the decrement button
    if (cntlabel_crdt) {
-        cntr.decrement(1, env.getNewTimestamp());
+        cntr.decrement(1, env.tick());
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }
@@ -32,11 +32,11 @@ if (listsRoot == null){
 }
 
 let envA = new crdtl.utils.SimpleEnvironment(
-    new crdtl.utils.DCUId("myClientA"));
+    new crdtl.utils.ClientUId("myClientA"));
 var glA = new GList(envA);
 
 let envB = new crdtl.utils.SimpleEnvironment(
-        new crdtl.utils.DCUId("myClientB"));
+        new crdtl.utils.ClientUId("myClientB"));
 var glB = new GList(envB);
 
 // propagate from A to B (full state)

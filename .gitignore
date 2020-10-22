@@ -1,4 +1,5 @@
 
 node_modules/*
-src/main.js.map
-src/main.js
+src/*.js.map
+src/*.js
+dist/bundle.js

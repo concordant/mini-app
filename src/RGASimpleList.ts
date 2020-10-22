@@ -31,6 +31,15 @@ export class GList{
         this.elementsRGA = new crdtlib.crdt.RGA();
 
         this.glist = document.createElement("div");
+
+        let refreshBtn = this.glist.appendChild(
+            document.createElement("input"));
+        refreshBtn.type = "button";
+        refreshBtn.value = "Refresh";
+        refreshBtn.addEventListener(
+            "click",
+            (e:Event) => this.render());
+
         this.gVV = this.glist.appendChild(document.createTextNode(""));
         this.gul = this.glist.appendChild(document.createElement("ul"));
 
@@ -52,14 +61,6 @@ export class GList{
         this.ginbtn.addEventListener(
             "click",
             (e:Event) => this.doInsert());
-
-        let refreshBtn = this.glist.appendChild(
-            document.createElement("input"));
-        refreshBtn.type = "button";
-        refreshBtn.value = "Refresh";
-        refreshBtn.addEventListener(
-            "click",
-            (e:Event) => this.render());
 
         // Trigger the button element with a click on "Enter" key
         this.gintext.addEventListener("keyup", (e:KeyboardEvent) => {
@@ -100,7 +101,6 @@ export class GList{
      */
     public append(value: string){
         let ts = this.env.tick();
-        this.env.updateTs(ts);
         this.elementsRGA.insertAt(this.elementsRGA.get().size,
                                   value,
                                   ts);
@@ -117,7 +117,6 @@ export class GList{
         let lis = this.gul.children;
         let ref = index < lis.length ? lis[index] : null;
         let ts = this.env.tick();
-        this.env.updateTs(ts);
         this.elementsRGA.insertAt(index,
                                   value,
                                   ts);
@@ -152,6 +151,7 @@ export class GList{
         let i = this.insertAtStr(this.gindex.value, this.gintext.value);
         this.gintext.value = '';
         this.gindex.value = i.toString();
+        this.render();
     }
 
     /**
@@ -168,7 +168,6 @@ export class GList{
             parentList.children, line);
 
         let ts = this.env.tick();
-        this.env.updateTs(ts);
         this.elementsRGA.removeAt(index,
                                   ts);
         line.remove();

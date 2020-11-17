@@ -10,8 +10,7 @@
   "author": "Annette Bieniusa",
   "license": "MIT",
   "dependencies": {
-    "bundle-dependencies": "^1.0.2",
-    "c-crdtlib": "file:/Users/yannickli/Downloads/package"
+    "@concordant/c-crdtlib": "0.0.1"
   },
   "devDependencies": {
     "browserify": "^16.5.1",

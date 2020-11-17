@@ -1,4 +1,4 @@
-import { crdtlib } from 'c-crdtlib';
+import { crdtlib } from '@concordant/c-crdtlib';
 
 function vvToString(vv: any){
     return vv.toJson();

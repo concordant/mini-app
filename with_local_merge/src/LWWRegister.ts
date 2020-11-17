@@ -105,7 +105,7 @@ export class LWWRegister{
      *
      * @returns the current (full) state
      */
-    public getState(): {delta: crdtlib.crdt.LWWRegister<string>,
+    public getState(): {delta: crdtlib.crdt.LWWRegister,
                         vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsLWWRegister, vv: this.env.getState()};
     }
@@ -119,7 +119,7 @@ export class LWWRegister{
      * (same structure as {@link RGASimpleList.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWRegister<string>>,
+    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWRegister>,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsLWWRegister.generateDelta(vv),
                 vv: this.env.getState()};
@@ -133,7 +133,7 @@ export class LWWRegister{
      * or {@link RGASimpleList.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWRegister<string>>,
+                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWRegister>,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsLWWRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);

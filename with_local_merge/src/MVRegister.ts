@@ -103,7 +103,7 @@ export class MVRegister{
      *
      * @returns the current (full) state
      */
-    public getState(): {delta: crdtlib.crdt.MVRegister<string>,
+    public getState(): {delta: crdtlib.crdt.MVRegister,
                         vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsMVRegister, vv: this.env.getState()};
     }
@@ -117,7 +117,7 @@ export class MVRegister{
      * (same structure as {@link RGASimpleList.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.MVRegister<string>>,
+    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.MVRegister>,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsMVRegister.generateDelta(vv),
                 vv: this.env.getState()};
@@ -131,7 +131,7 @@ export class MVRegister{
      * or {@link RGASimpleList.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.MVRegister<string>>,
+                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.MVRegister>,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsMVRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);

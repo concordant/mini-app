@@ -1,4 +1,4 @@
-import { crdtlib as crdtl } from 'c-crdtlib';
+import { crdtlib as crdtl } from '@concordant/c-crdtlib';
 
 let env = new crdtl.utils.SimpleEnvironment(
     new crdtl.utils.ClientUId("myClientId"));

@@ -1,4 +1,4 @@
-import { crdtlib } from 'c-crdtlib';
+import { crdtlib } from '@concordant/c-crdtlib';
 
 function vvToString(vv: any){
     return vv.toJson();
@@ -10,7 +10,7 @@ export class GList{
     // environment (clock & version vector)
     private env: any; //crdtlib.utils.Environment;
     // the RGA
-    private elementsRGA: any; //: crdtlib.crdt.RGA<string>;
+    private elementsRGA: any; //: crdtlib.crdt.RGA;
 
     // whole list component
     private glist: HTMLElement;
@@ -206,7 +206,7 @@ export class GList{
      *
      * @returns the current (full) state
      */
-    public getState(): {delta: crdtlib.crdt.RGA<string>,
+    public getState(): {delta: crdtlib.crdt.RGA,
                         vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsRGA, vv: this.env.getState()};
     }
@@ -220,7 +220,7 @@ export class GList{
      * (same structure as {@link RGASimpleList.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA<string>>,
+    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA>,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsRGA.generateDelta(vv),
                 vv: this.env.getState()};
@@ -234,7 +234,7 @@ export class GList{
      * or {@link RGASimpleList.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA<string>>,
+                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA>,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsRGA.merge(delta.delta);
         this.env.updateVv(delta.vv);

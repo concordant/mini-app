@@ -2,6 +2,17 @@
 
 This app exercises the usage of CRDTs on the client-side with very simple examples.
 
+## Requirements
+
+For the moment, we are using a private scoped package of CRDT.
+
+For that purpose, we need to [create a deploy token](https://docs.gitlab.com/ee/user/project/deploy_tokens/) in concordant/Software/c-crdtlib.
+
+Then use the following command to configure our npm client to use our organization's scope:
+```
+$ npm config set @concordant:registry "https://gitlab.inria.fr/api/v4/packages/npm/"
+$ npm config set '//gitlab.inria.fr/api/v4/packages/npm/:_authToken' "<deployToken>"
+```
 
 ## Build
 

@@ -10,7 +10,7 @@ export class GList{
     // environment (clock & version vector)
     private env: any; //crdtlib.utils.Environment;
     // the RGA
-    private elementsRGA: any; //: crdtlib.crdt.RGA<string>;
+    private elementsRGA: any; //: crdtlib.crdt.RGA;
 
     // whole list component
     private glist: HTMLElement;

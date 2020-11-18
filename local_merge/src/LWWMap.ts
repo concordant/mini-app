@@ -1,4 +1,3 @@
-
 import { crdtlib } from '@concordant/c-crdtlib';
 
 function vvToString(vv: any){
@@ -10,23 +9,21 @@ export class LWWMap{
     // [#29](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/29)
     // environment (clock & version vector)
     private env: any; //crdtlib.utils.Environment;
-    // the RGA
-    private elementsLWWMap: any; //: crdtlib.crdt.RGA<string>;
+    // the LWWMap
+    private elementsLWWMap: any; //: crdtlib.crdt.LWWMap;
 
     // whole list component
-    private glist: HTMLElement;
+    private gElem: HTMLElement;
     // version vector
     private gVV: Text;
-    // displayed list, with delete buttons
-    private gul: HTMLElement;
     // input key
-    private ginkey: HTMLInputElement;
+    private gInKey: HTMLInputElement;
     // input key
     private selectType: HTMLSelectElement;
     // input value
-    private ginvalue : any;
-    // insert
-    private ginbtn: HTMLInputElement;
+    private gInValue : any;
+    // insert button
+    private gInBtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
         console.log(typeof crdtlib.crdt.LWWMap);
@@ -41,9 +38,9 @@ export class LWWMap{
         this.env = env;
         this.elementsLWWMap = new crdtlib.crdt.LWWMap();
 
-        this.glist = document.createElement("div");
+        this.gElem = document.createElement("div");
 
-        let refreshBtn = this.glist.appendChild(
+        let refreshBtn = this.gElem.appendChild(
             document.createElement("input"));
         refreshBtn.type = "button";
         refreshBtn.value = "Refresh";
@@ -51,15 +48,17 @@ export class LWWMap{
             "click",
             (e:Event) => this.render());
 
-        this.gVV = this.glist.appendChild(document.createTextNode(""));
-        this.gul = this.glist.appendChild(document.createElement("ul"));
+        this.gVV = this.gElem.appendChild(document.createTextNode(""));
 
-        this.ginkey = this.glist.appendChild(
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+
+        this.gInKey = this.gElem.appendChild(
             document.createElement("input"));
-        this.ginkey.type = "text";
-        this.ginkey.placeholder = "Enter The Key";
+        this.gInKey.type = "text";
+        this.gInKey.placeholder = "Enter The Key";
 
-        this.selectType = this.glist.appendChild(
+        this.selectType = this.gElem.appendChild(
             document.createElement("select"));
         this.selectType.id="mesTypes"
         
@@ -71,19 +70,19 @@ export class LWWMap{
             this.selectType.appendChild(option);
         });
 
-        this.ginvalue = this.glist.appendChild(
+        this.gInValue = this.gElem.appendChild(
             document.createElement("input"));
-        this.setginvalueType("String")
+        this.setValueType("String")
 
-        this.ginbtn = this.glist.appendChild(
+        this.gInBtn = this.gElem.appendChild(
             document.createElement("input"));
-        this.ginbtn.type = "button";
-        this.ginbtn.value = "Add";
-        this.ginbtn.addEventListener(
+        this.gInBtn.type = "button";
+        this.gInBtn.value = "Add";
+        this.gInBtn.addEventListener(
             "click",
-            (e:Event) => this.doInsert(this.selectType.value));
+            (e:Event) => this.insert(this.selectType.value));
 
-        var ginbtnr = this.glist.appendChild(
+        var ginbtnr = this.gElem.appendChild(
             document.createElement("input"));
         ginbtnr.type = "button";
         ginbtnr.value = "Find";
@@ -91,7 +90,7 @@ export class LWWMap{
             "click",
             (e:Event) => this.search(this.selectType.value));
 
-        var ginbtnremove = this.glist.appendChild(
+        var ginbtnremove = this.gElem.appendChild(
                 document.createElement("input"));
         ginbtnremove.type = "button";
         ginbtnremove.value = "Remove";
@@ -101,123 +100,137 @@ export class LWWMap{
 
         this.selectType.addEventListener(
                 "change", 
-                (e:Event) => this.setginvalueType(this.selectType.value));
+                (e:Event) => this.setValueType(this.selectType.value));
     }
 
-    private setginvalueType(type:string){
+    /**
+     * Update the DOM with the new value type.
+     * @param type The new value type.
+     */
+    private setValueType(type:string){
         switch (type){
             case "String":
-                this.ginvalue.type = "text";
-                this.ginvalue.placeholder = "Enter a string";
+                this.gInValue.type = "text";
+                this.gInValue.placeholder = "Enter a string";
+                this.gInValue.value="";
                 break;
             case "Int":
-                this.ginvalue.type = "number";
-                this.ginvalue.step="1";
-                this.ginvalue.placeholder = "Enter an integer";
+                this.gInValue.type = "number";
+                this.gInValue.step="1";
+                this.gInValue.placeholder = "Enter an integer";
+                this.gInValue.value="";
                 break;
             case "Double":
-                this.ginvalue.type = "number";
-                this.ginvalue.step="0.001";
-                this.ginvalue.placeholder = "Enter a double";
+                this.gInValue.type = "number";
+                this.gInValue.step="0.001";
+                this.gInValue.placeholder = "Enter a double";
+                this.gInValue.value="";
                 break;
             case "Boolean":
-                this.ginvalue.type = "text";
-                this.ginvalue.placeholder = "Enter true or false";
+                this.gInValue.type = "text";
+                this.gInValue.placeholder = "Enter true or false";
+                this.gInValue.value="";
                 break;
         }
 
     }
 
     /**
-     * Insert typed value at given index and reset input boxes
+     * Insert typed entry and reset input boxes
      *
+     * @param type The value type.
      * @remarks triggeres by the "Add" button onclick
      */
-    public doInsert(type:string){
+    public insert(type:string){
         let ts = this.env.tick();
         switch (type){
             case "String":
-                this.elementsLWWMap.setString(this.ginkey.value,this.ginvalue.value,ts);
+                this.elementsLWWMap.setString(this.gInKey.value,this.gInValue.value,ts);
+                this.gInValue.value="";
                 break;
             case "Int":
-                this.elementsLWWMap.setInt(this.ginkey.value,this.ginvalue.value,ts);
+                this.elementsLWWMap.setInt(this.gInKey.value,this.gInValue.value,ts);
+                this.gInValue.value=0;
                 break;
             case "Double":
-                this.elementsLWWMap.setDouble(this.ginkey.value,this.ginvalue.value,ts);
+                this.elementsLWWMap.setDouble(this.gInKey.value,this.gInValue.value,ts);
+                this.gInValue.value=0;
                 break;
             case "Boolean":
-                if (this.ginvalue.value=="true" || this.ginvalue.value=="false"){
-                    this.elementsLWWMap.setBoolean(this.ginkey.value,this.ginvalue.value,ts);
-                } else {
-                    this.ginvalue.value=""
+                if (this.gInValue.value=="true" || this.gInValue.value=="false"){
+                    this.elementsLWWMap.setBoolean(this.gInKey.value,this.gInValue.value,ts);
+
                 }
+                this.gInValue.value=""
                 break;
         }
+        this.gInKey.value="";
         this.render();
     }
 
+    /**
+     * Remove an entry
+     *
+     * @param type The value type.
+     */
     public remove(type:string){
         let ts = this.env.tick();
         switch (type){
             case "String":
-                this.elementsLWWMap.deleteString(this.ginkey.value,ts);
+                this.elementsLWWMap.deleteString(this.gInKey.value,ts);
                 break;
             case "Int":
-                this.elementsLWWMap.deleteInt(this.ginkey.value,ts);
+                this.elementsLWWMap.deleteInt(this.gInKey.value,ts);
                 break;
             case "Double":
-                this.elementsLWWMap.deleteDouble(this.ginkey.value,ts);
+                this.elementsLWWMap.deleteDouble(this.gInKey.value,ts);
                 break;
             case "Boolean":
-                this.elementsLWWMap.deleteBoolean(this.ginkey.value,ts);
+                this.elementsLWWMap.deleteBoolean(this.gInKey.value,ts);
                 break;
         }
         this.render();
     }
 
+    /**
+     * Search an entry and display the value in the value box if founded.
+     *
+     * @param type The value type.
+     */
     public search(type:string){
         var res=""
         switch (type){
             case "String":
-                res=this.elementsLWWMap.getString(this.ginkey.value);
+                res=this.elementsLWWMap.getString(this.gInKey.value);
                 break;
             case "Int":
-                res=this.elementsLWWMap.getInt(this.ginkey.value);
+                res=this.elementsLWWMap.getInt(this.gInKey.value);
                 break;
             case "Double":
-                res=this.elementsLWWMap.getDouble(this.ginkey.value);
+                res=this.elementsLWWMap.getDouble(this.gInKey.value);
                 break;
             case "Boolean":
-                res=this.elementsLWWMap.getBoolean(this.ginkey.value);
+                res=this.elementsLWWMap.getBoolean(this.gInKey.value);
                 break;
         }
-        this.ginvalue.value=res
+        this.gInValue.value=res
         console.log(this.elementsLWWMap.entries_0)
     }
 
     /**
-     * Populate the DOM with the list content
+     * Update the DOM with the new version vector.
      *
      * @returns the whole component
      */
     public render(): HTMLElement{
         this.gVV.nodeValue = vvToString(this.getState().vv);
-        // clear list
-        // let gul = this.gul.cloneNode(false);
-        // this.gul.parentNode.replaceChild(ngul, this.gul);
-        // this.gul = ngul;
-        this.gul.innerHTML = "";
-
-        // then populate :
-        // convert to Array to workaround
-        // [#32](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/32)
-        return this.glist;
+        return this.gElem;
     }
 
     ////////// Synchronization methods //////////
 
     /**
-     * Get current state: RGA & current version vector
+     * Get current state: LWWMap & current version vector
      *
      * @remarks
      * There should be an interface containing both.
@@ -235,7 +248,7 @@ export class LWWMap{
      * @param vv - current version vector of another replica,
      * used as origin for the delta
      * @returns the generated delta, with current version vector
-     * (same structure as {@link RGASimpleList.getState})
+     * (same structure as {@link LWWMap.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
     {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWMap>,
@@ -248,8 +261,8 @@ export class LWWMap{
      * Merge a delta or state into this replica
      *
      * @param delta - the delta, as returned
-     * by {@link RGASimpleList.getState}
-     * or {@link RGASimpleList.getDeltaFrom}
+     * by {@link LWWMap.getState}
+     * or {@link LWWMap.getDeltaFrom}
      */
     public merge(delta:
                  {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWMap>,

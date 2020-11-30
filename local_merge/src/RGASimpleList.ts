@@ -220,7 +220,7 @@ export class GList{
      * (same structure as {@link RGASimpleList.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA>,
+    {delta: crdtlib.crdt.DeltaCRDT,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsRGA.generateDelta(vv),
                 vv: this.env.getState()};
@@ -234,7 +234,7 @@ export class GList{
      * or {@link RGASimpleList.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.RGA>,
+                 {delta: crdtlib.crdt.DeltaCRDT,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsRGA.merge(delta.delta);
         this.env.updateVv(delta.vv);

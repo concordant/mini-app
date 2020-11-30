@@ -112,7 +112,7 @@ export class MVRegister{
      * (same structure as {@link MVRegister.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.MVRegister>,
+    {delta: crdtlib.crdt.DeltaCRDT,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsMVRegister.generateDelta(vv),
                 vv: this.env.getState()};
@@ -126,7 +126,7 @@ export class MVRegister{
      * or {@link MVRegister.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.MVRegister>,
+                 {delta: crdtlib.crdt.DeltaCRDT,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsMVRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);

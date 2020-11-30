@@ -151,7 +151,6 @@ export class GList{
         let i = this.insertAtStr(this.gindex.value, this.gintext.value);
         this.gintext.value = '';
         this.gindex.value = i.toString();
-        this.render();
     }
 
     /**

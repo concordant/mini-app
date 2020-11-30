@@ -165,7 +165,6 @@ export class LWWMap{
                 break;
         }
         this.gInKey.value="";
-        this.render();
     }
 
     /**
@@ -189,7 +188,6 @@ export class LWWMap{
                 this.elementsLWWMap.deleteBoolean(this.gInKey.value,ts);
                 break;
         }
-        this.render();
     }
 
     /**

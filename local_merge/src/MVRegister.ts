@@ -74,7 +74,6 @@ export class MVRegister{
         let ts = this.env.tick();
         this.elementsMVRegister.set(value,ts);
         this.gDisplay.nodeValue=this.elementsMVRegister.get();
-        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     /**

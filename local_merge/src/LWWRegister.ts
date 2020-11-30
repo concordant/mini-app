@@ -75,7 +75,6 @@ export class LWWRegister{
         let ts = this.env.tick();
         this.elementsLWWRegister.set(value,ts);
         this.gDisplay.nodeValue=value;
-        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     /**

@@ -75,7 +75,6 @@ export class LWWRegister{
         let ts = this.env.tick();
         this.elementsLWWRegister.set(value,ts);
         this.gDisplay.nodeValue=value;
-        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     /**
@@ -113,7 +112,7 @@ export class LWWRegister{
      * (same structure as {@link LWWRegister.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWRegister>,
+    {delta: crdtlib.crdt.DeltaCRDT,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsLWWRegister.generateDelta(vv),
                 vv: this.env.getState()};
@@ -127,7 +126,7 @@ export class LWWRegister{
      * or {@link LWWRegister.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWRegister>,
+                 {delta: crdtlib.crdt.DeltaCRDT,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsLWWRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);

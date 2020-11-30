@@ -165,7 +165,6 @@ export class LWWMap{
                 break;
         }
         this.gInKey.value="";
-        this.render();
     }
 
     /**
@@ -189,7 +188,6 @@ export class LWWMap{
                 this.elementsLWWMap.deleteBoolean(this.gInKey.value,ts);
                 break;
         }
-        this.render();
     }
 
     /**
@@ -251,7 +249,7 @@ export class LWWMap{
      * (same structure as {@link LWWMap.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWMap>,
+    {delta: crdtlib.crdt.DeltaCRDT,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsLWWMap.generateDelta(vv),
                 vv: this.env.getState()};
@@ -265,7 +263,7 @@ export class LWWMap{
      * or {@link LWWMap.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT<crdtlib.crdt.LWWMap>,
+                 {delta: crdtlib.crdt.DeltaCRDT,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsLWWMap.merge(delta.delta);
         this.env.updateVv(delta.vv);

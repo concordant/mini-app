@@ -69,7 +69,7 @@ export class LWWRegister{
     /**
      * Insert value
      *
-     * @remarks triggeres by the "Add" button onclick
+     * @remarks triggered by the "Add" button onclick
      */
     public insert(value: string){
         let ts = this.env.tick();

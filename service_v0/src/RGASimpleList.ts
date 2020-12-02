@@ -145,7 +145,7 @@ export class GList{
     /**
      * Insert typed value at given index and reset input boxes
      *
-     * @remarks triggeres by the "Add" button onclick
+     * @remarks triggered by the "Add" button onclick
      */
     public doInsert(){
         let i = this.insertAtStr(this.gindex.value, this.gintext.value);

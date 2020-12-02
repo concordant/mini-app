@@ -85,7 +85,7 @@ export class GList{
         let lineDelBtn = line.appendChild(
             document.createElement("input"));
         lineDelBtn.type = "button";
-        lineDelBtn.value = "x";
+        lineDelBtn.value = "X";
         lineDelBtn.addEventListener("click", (e:Event) => {
             this.remove(line);
         });
@@ -187,8 +187,9 @@ export class GList{
         // then populate :
         // convert to Array to workaround
         // [#32](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/32)
-        for (let v of this.elementsRGA.get().toArray()){
-            this.gul.appendChild(this.newLine(v));
+        let iterator = this.elementsRGA.iterator()
+        while (iterator.hasNext()){
+            this.gul.appendChild(this.newLine(iterator.next()));
         }
         return this.glist;
     }

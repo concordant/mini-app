@@ -26,8 +26,6 @@ export class LWWMap{
     private gInBtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
-        console.log(typeof crdtlib.crdt.LWWMap);
-
         enum MapTypes {
             String,
             Int,

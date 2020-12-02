@@ -24,7 +24,6 @@ export class MVRegister{
     private gInBtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
-        console.log(typeof crdtlib.crdt.MVRegister);
         this.env = env;
         this.elementsMVRegister = new crdtlib.crdt.MVRegister();
 

@@ -26,7 +26,6 @@ export class GList{
     private ginbtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
-        console.log(typeof crdtlib.crdt.RGA);
         this.env = env;
         this.elementsRGA = new crdtlib.crdt.RGA();
 

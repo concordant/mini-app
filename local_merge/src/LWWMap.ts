@@ -16,6 +16,16 @@ export class LWWMap{
     private gElem: HTMLElement;
     // version vector
     private gVV: Text;
+
+    // displayed string list, with delete buttons
+    private gulString: HTMLElement;
+    // displayed integer list, with delete buttons
+    private gulInt: HTMLElement;
+    // displayed double list, with delete buttons
+    private gulDouble: HTMLElement;
+    // displayed boolean list, with delete buttons
+    private gulBoolean: HTMLElement;
+
     // input key
     private gInKey: HTMLInputElement;
     // input key
@@ -47,9 +57,16 @@ export class LWWMap{
             (e:Event) => this.render());
 
         this.gVV = this.gElem.appendChild(document.createTextNode(""));
-
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createTextNode("String values :"));
+        this.gulString = this.gElem.appendChild(document.createElement("ul"));
+        this.gElem.appendChild(document.createTextNode("Integer values :"));
+        this.gulInt = this.gElem.appendChild(document.createElement("ul"));
+        this.gElem.appendChild(document.createTextNode("Double values :"));
+        this.gulDouble = this.gElem.appendChild(document.createElement("ul"));
+        this.gElem.appendChild(document.createTextNode("Boolean values :"));
+        this.gulBoolean = this.gElem.appendChild(document.createElement("ul"));
 
         this.gInKey = this.gElem.appendChild(
             document.createElement("input"));
@@ -78,23 +95,7 @@ export class LWWMap{
         this.gInBtn.value = "Add";
         this.gInBtn.addEventListener(
             "click",
-            (e:Event) => this.insert(this.selectType.value));
-
-        var ginbtnr = this.gElem.appendChild(
-            document.createElement("input"));
-        ginbtnr.type = "button";
-        ginbtnr.value = "Find";
-        ginbtnr.addEventListener(
-            "click",
-            (e:Event) => this.search(this.selectType.value));
-
-        var ginbtnremove = this.gElem.appendChild(
-                document.createElement("input"));
-        ginbtnremove.type = "button";
-        ginbtnremove.value = "Remove";
-        ginbtnremove.addEventListener(
-            "click",
-            (e:Event) => this.remove(this.selectType.value));
+            (e:Event) => this.insert());
 
         this.selectType.addEventListener(
                 "change", 
@@ -103,7 +104,8 @@ export class LWWMap{
 
     /**
      * Update the DOM with the new value type.
-     * @param type The new value type.
+     * 
+     * @param type The new value type
      */
     private setValueType(type:string){
         switch (type){
@@ -120,7 +122,7 @@ export class LWWMap{
                 break;
             case "Double":
                 this.gInValue.type = "number";
-                this.gInValue.step="0.001";
+                this.gInValue.step="0.01";
                 this.gInValue.placeholder = "Enter a double";
                 this.gInValue.value="";
                 break;
@@ -130,96 +132,143 @@ export class LWWMap{
                 this.gInValue.value="";
                 break;
         }
-
     }
 
     /**
-     * Insert typed entry and reset input boxes
+     * Create a new line element ("li") with delete button
+     * and add it to the DOM.
      *
-     * @param type The value type.
-     * @remarks triggeres by the "Add" button onclick
+     * @param type - The value type
+     * @param key - The element key
+     * @param value - The element value for the given key
      */
-    public insert(type:string){
-        let ts = this.env.tick();
+    private newLine(type: string, key: string, value: string) {
+        let line = document.createElement("li");
+        let lineDelBtn = line.appendChild(
+            document.createElement("input"));
+        lineDelBtn.type = "button";
+        lineDelBtn.value = "X";
+        lineDelBtn.addEventListener("click", (e:Event) => {
+            this.remove(type, key, line);
+        });
+        line.append(key + " -> " + value);
         switch (type){
             case "String":
+                this.gulString.appendChild(line);
+                break;
+            case "Int":
+                this.gulInt.appendChild(line);
+                break;
+            case "Double":
+                this.gulDouble.appendChild(line);
+                break;
+            case "Boolean":
+                this.gulBoolean.appendChild(line);
+                break;
+        }
+    }
+
+    /**
+     * Insert typed entry and reset input boxes.
+     *
+     * @remarks triggered by the "Add" button onclick
+     */
+    public insert(){
+        let ts = this.env.tick();
+        switch (this.selectType.value){
+            case "String":
                 this.elementsLWWMap.setString(this.gInKey.value,this.gInValue.value,ts);
-                this.gInValue.value="";
                 break;
             case "Int":
                 this.elementsLWWMap.setInt(this.gInKey.value,this.gInValue.value,ts);
-                this.gInValue.value=0;
                 break;
             case "Double":
                 this.elementsLWWMap.setDouble(this.gInKey.value,this.gInValue.value,ts);
-                this.gInValue.value=0;
                 break;
             case "Boolean":
                 if (this.gInValue.value=="true" || this.gInValue.value=="false"){
                     this.elementsLWWMap.setBoolean(this.gInKey.value,this.gInValue.value,ts);
-
                 }
-                this.gInValue.value=""
                 break;
         }
         this.gInKey.value="";
+        this.gInValue.value="";
+        this.render();
     }
 
     /**
-     * Remove an entry
+     * Remove a line and the corresponding element in the map.
      *
-     * @param type The value type.
+     * @param type The value type
+     * @param key The element key
+     * @param line The line element to remove
+     * @remarks Triggered by the "X" button onclick
      */
-    public remove(type:string){
+    public remove(type:string, key:string, line: HTMLElement){
         let ts = this.env.tick();
+
+        let parentList = line.parentElement;
+        if (! parentList)
+            throw new Error("line has no parent. "
+                + "Are you trying to make me kill an orphan ?")
+        line.remove();
+
         switch (type){
             case "String":
-                this.elementsLWWMap.deleteString(this.gInKey.value,ts);
+                this.elementsLWWMap.deleteString(key, ts);
                 break;
             case "Int":
-                this.elementsLWWMap.deleteInt(this.gInKey.value,ts);
+                this.elementsLWWMap.deleteInt(key, ts);
                 break;
             case "Double":
-                this.elementsLWWMap.deleteDouble(this.gInKey.value,ts);
+                this.elementsLWWMap.deleteDouble(key, ts);
                 break;
             case "Boolean":
-                this.elementsLWWMap.deleteBoolean(this.gInKey.value,ts);
+                this.elementsLWWMap.deleteBoolean(key, ts);
                 break;
         }
     }
 
     /**
-     * Search an entry and display the value in the value box if founded.
-     *
-     * @param type The value type.
-     */
-    public search(type:string){
-        var res=""
-        switch (type){
-            case "String":
-                res=this.elementsLWWMap.getString(this.gInKey.value);
-                break;
-            case "Int":
-                res=this.elementsLWWMap.getInt(this.gInKey.value);
-                break;
-            case "Double":
-                res=this.elementsLWWMap.getDouble(this.gInKey.value);
-                break;
-            case "Boolean":
-                res=this.elementsLWWMap.getBoolean(this.gInKey.value);
-                break;
-        }
-        this.gInValue.value=res
-        console.log(this.elementsLWWMap.entries_0)
-    }
-
-    /**
-     * Update the DOM with the new version vector.
+     * Update the DOM with the lists contents and the new version vector.
      *
      * @returns the whole component
      */
     public render(): HTMLElement{
         this.gVV.nodeValue = vvToString(this.getState().vv);
+
+        this.gulString.innerHTML = "";
+        this.gulInt.innerHTML = "";
+        this.gulDouble.innerHTML = "";
+        this.gulBoolean.innerHTML = "";
+
+        let iterators = [this.elementsLWWMap.iteratorString(),
+            this.elementsLWWMap.iteratorInt(),
+            this.elementsLWWMap.iteratorDouble(),
+            this.elementsLWWMap.iteratorBoolean()]
+        let type = ["String", "Int", "Double", "Boolean"]
+
+        for (let index in iterators) {
+            let iterator = iterators[index]
+            while (iterator.hasNext()) {
+                let elem = iterator.next()
+                switch (type[index]){
+                    case "String":
+                        this.newLine(type[index], elem.first, elem.second);
+                        break;
+                    case "Int":
+                        this.newLine(type[index], elem.first, elem.second);
+                        break;
+                    case "Double":
+                        this.newLine(type[index], elem.first, elem.second);
+                        break;
+                    case "Boolean":
+                        this.newLine(type[index], elem.first, elem.second);
+                        break;
+                }
+            }
+        }
+
         return this.gElem;
     }
 

@@ -1,4 +1,4 @@
-import { crdtlib } from 'c-crdtlib';
+import { crdtlib } from '@concordant/c-crdtlib';
 
 function vvToString(vv: any){
     return vv.toJson();
@@ -10,7 +10,7 @@ export class GList{
     // environment (clock & version vector)
     private env: any; //crdtlib.utils.Environment;
     // the RGA
-    private elementsRGA: any; //: crdtlib.crdt.RGA<string>;
+    private elementsRGA: any; //: crdtlib.crdt.RGA;
 
     // whole list component
     private glist: HTMLElement;
@@ -31,6 +31,15 @@ export class GList{
         this.elementsRGA = new crdtlib.crdt.RGA();
 
         this.glist = document.createElement("div");
+
+        let refreshBtn = this.glist.appendChild(
+            document.createElement("input"));
+        refreshBtn.type = "button";
+        refreshBtn.value = "Refresh";
+        refreshBtn.addEventListener(
+            "click",
+            (e:Event) => this.render());
+
         this.gVV = this.glist.appendChild(document.createTextNode(""));
         this.gul = this.glist.appendChild(document.createElement("ul"));
 
@@ -52,14 +61,6 @@ export class GList{
         this.ginbtn.addEventListener(
             "click",
             (e:Event) => this.doInsert());
-
-        let refreshBtn = this.glist.appendChild(
-            document.createElement("input"));
-        refreshBtn.type = "button";
-        refreshBtn.value = "Refresh";
-        refreshBtn.addEventListener(
-            "click",
-            (e:Event) => this.render());
 
         // Trigger the button element with a click on "Enter" key
         this.gintext.addEventListener("keyup", (e:KeyboardEvent) => {
@@ -99,8 +100,7 @@ export class GList{
      * @param value - The content of the line
      */
     public append(value: string){
-        let ts = this.env.getNewTimestamp();
-        this.env.updateStateTS(ts);
+        let ts = this.env.tick();
         this.elementsRGA.insertAt(this.elementsRGA.get().size,
                                   value,
                                   ts);
@@ -116,8 +116,7 @@ export class GList{
     public insertAt(index: number, value: string){
         let lis = this.gul.children;
         let ref = index < lis.length ? lis[index] : null;
-        let ts = this.env.getNewTimestamp();
-        this.env.updateStateTS(ts);
+        let ts = this.env.tick();
         this.elementsRGA.insertAt(index,
                                   value,
                                   ts);
@@ -167,8 +166,7 @@ export class GList{
         let index = Array.prototype.indexOf.call(
             parentList.children, line);
 
-        let ts = this.env.getNewTimestamp();
-        this.env.updateStateTS(ts);
+        let ts = this.env.tick();
         this.elementsRGA.removeAt(index,
                                   ts);
         line.remove();
@@ -207,9 +205,9 @@ export class GList{
      *
      * @returns the current (full) state
      */
-    public getState(): {delta: crdtlib.crdt.RGA<string>,
+    public getState(): {delta: crdtlib.crdt.RGA,
                         vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsRGA, vv: this.env.getCurrentState()};
+        return {delta: this.elementsRGA, vv: this.env.getState()};
     }
 
     /**
@@ -221,10 +219,10 @@ export class GList{
      * (same structure as {@link RGASimpleList.getState})
      */
     public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.Delta<crdtlib.crdt.RGA<string>>,
+    {delta: crdtlib.crdt.DeltaCRDT,
      vv: crdtlib.crdt.VersionVector}{
         return {delta: this.elementsRGA.generateDelta(vv),
-                vv: this.env.getCurrentState()};
+                vv: this.env.getState()};
     }
 
     /**
@@ -235,10 +233,10 @@ export class GList{
      * or {@link RGASimpleList.getDeltaFrom}
      */
     public merge(delta:
-                 {delta: crdtlib.crdt.Delta<crdtlib.crdt.RGA<string>>,
+                 {delta: crdtlib.crdt.DeltaCRDT,
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsRGA.merge(delta.delta);
-        this.env.updateStateVV(delta.vv);
+        this.env.updateVv(delta.vv);
         this.render();
     }
 }

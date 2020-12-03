@@ -6,14 +6,36 @@
     </head>
     <body>
 
+        <div id="crdt_list"></div>
+
         <h1>Counter</h1>
             <div>
                 <button id="increment" onclick="myBundle.incrLabel()">+</button>
                 <p>CRDT counter:  <b id="cnt_crdt">0</b></p>
                 <button id="decrement" onclick="myBundle.decrLabel()">-</button>
             </div>
+
         <h1>RGA</h1>
-            <div id="listsRoot" />
-            <script src="bundle.js"></script>
+            <div id="listsRoot">
+
+            </div>
+
+        <h1>LWWMAP</h1>
+            <div id="my_lwwmap">
+
+            </div>
+
+        <h1>LWWRegister</h1>
+            <div id="my_lwwregister">
+
+            </div>
+        
+        <h1>MVRegister</h1>
+            <div id="my_mvregister">
+
+            </div>
+
+        <script src="bundle.js"></script>
+
     </body>
 </html>

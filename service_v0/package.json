@@ -1,0 +1,19 @@
+{
+  "name": "mini-app",
+  "version": "1.0.0",
+  "description": "Demo app for Concordant",
+  "main": "src/main.js",
+  "scripts": {
+    "build-tsc": "tsc && browserify src/main.js --standalone myBundle -o dist/bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Annette Bieniusa",
+  "license": "MIT",
+  "dependencies": {
+    "@concordant/c-crdtlib": "0.0.1"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.1",
+    "typescript": "^3.9.7"
+  }
+}

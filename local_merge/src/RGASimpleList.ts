@@ -32,6 +32,10 @@ export class GList{
 
         this.glist = document.createElement("div");
 
+        // refresh button, for debugging purpose:
+        // render from scratch the whole list according to internal state
+        // → should not generate any visible change,
+        //   as each update is already applied separately
         let refreshBtn = this.glist.appendChild(
             document.createElement("input"));
         refreshBtn.type = "button";
@@ -40,6 +44,7 @@ export class GList{
             "click",
             (e:Event) => this.render());
 
+        // current Version Vector (debug).
         this.gVV = this.glist.appendChild(document.createTextNode(""));
         this.gul = this.glist.appendChild(document.createElement("ul"));
 
@@ -76,7 +81,7 @@ export class GList{
      * and add it to the DOM
      *
      * @remarks New line is not added to the list ;
-     * see {@link GList.append} and {@link GList.insertAt}
+     * see {@link RGASimpleList.append} and {@link RGASimpleList.insertAt}
      *
      * @param value - Content of the key
      * @returns The new line
@@ -105,6 +110,7 @@ export class GList{
                                   value,
                                   ts);
         this.gul.appendChild(this.newLine(value));
+        this.update();
     }
 
     /**
@@ -121,6 +127,7 @@ export class GList{
                                   value,
                                   ts);
         this.gul.insertBefore(this.newLine(value), lis[index]);
+        this.update();
     }
 
     /**
@@ -170,6 +177,7 @@ export class GList{
         this.elementsRGA.removeAt(index,
                                   ts);
         line.remove();
+        this.update();
     }
 
     /**
@@ -194,6 +202,12 @@ export class GList{
         return this.glist;
     }
 
+    /**
+     * Update the displayed Version Vector after a change.
+     */
+    private update(){
+        this.gVV.nodeValue = vvToString(this.getState().vv);
+    }
 
     ////////// Synchronization methods //////////
 

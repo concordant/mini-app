@@ -18,7 +18,7 @@ export class LWWMap{
     private gVV: Text;
     // input key
     private gInKey: HTMLInputElement;
-    // input key
+    // input type selector
     private selectType: HTMLSelectElement;
     // input value
     private gInValue : any;
@@ -61,7 +61,7 @@ export class LWWMap{
         this.selectType = this.gElem.appendChild(
             document.createElement("select"));
         this.selectType.id="mesTypes"
-        
+
         var mapTypes=["String","Int","Double","Boolean"]
         mapTypes.forEach(element => {
             var option = document.createElement("option");
@@ -99,7 +99,7 @@ export class LWWMap{
             (e:Event) => this.remove(this.selectType.value));
 
         this.selectType.addEventListener(
-                "change", 
+                "change",
                 (e:Event) => this.setValueType(this.selectType.value));
     }
 
@@ -165,6 +165,7 @@ export class LWWMap{
                 break;
         }
         this.gInKey.value="";
+        this.update();
     }
 
     /**
@@ -188,10 +189,11 @@ export class LWWMap{
                 this.elementsLWWMap.deleteBoolean(this.gInKey.value,ts);
                 break;
         }
+        this.update();
     }
 
     /**
-     * Search an entry and display the value in the value box if founded.
+     * Search an entry and display the value in the value box if found.
      *
      * @param type The value type.
      */
@@ -216,13 +218,22 @@ export class LWWMap{
     }
 
     /**
-     * Update the DOM with the new version vector.
+     * Update the DOM and returns the whole element
      *
      * @returns the whole component
      */
     public render(): HTMLElement{
-        this.gVV.nodeValue = vvToString(this.getState().vv);
+        this.update();
         return this.gElem;
+    }
+
+    /**
+     * Update the displayed Version Vector after a change.
+     *
+     * Must be called by every user-facing method modifying state
+     */
+    private update(){
+        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     ////////// Synchronization methods //////////
@@ -267,6 +278,6 @@ export class LWWMap{
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsLWWMap.merge(delta.delta);
         this.env.updateVv(delta.vv);
-        this.render();
+        this.update();
     }
 }

@@ -28,7 +28,7 @@ export class LWWMap{
 
     // input key
     private gInKey: HTMLInputElement;
-    // input key
+    // input type selector
     private selectType: HTMLSelectElement;
     // input value
     private gInValue : any;
@@ -76,7 +76,7 @@ export class LWWMap{
         this.selectType = this.gElem.appendChild(
             document.createElement("select"));
         this.selectType.id="mesTypes"
-        
+
         var mapTypes=["String","Int","Double","Boolean"]
         mapTypes.forEach(element => {
             var option = document.createElement("option");
@@ -98,7 +98,7 @@ export class LWWMap{
             (e:Event) => this.insert());
 
         this.selectType.addEventListener(
-                "change", 
+                "change",
                 (e:Event) => this.setValueType(this.selectType.value));
     }
 
@@ -268,8 +268,16 @@ export class LWWMap{
                 }
             }
         }
-
         return this.gElem;
+    }
+
+    /**
+     * Update the displayed Version Vector after a change.
+     *
+     * Must be called by every user-facing method modifying state
+     */
+    private update(){
+        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     ////////// Synchronization methods //////////
@@ -314,6 +322,6 @@ export class LWWMap{
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsLWWMap.merge(delta.delta);
         this.env.updateVv(delta.vv);
-        this.render();
+        this.update();
     }
 }

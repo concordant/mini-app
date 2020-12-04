@@ -28,7 +28,7 @@ export class LWWMap{
 
     // input key
     private gInKey: HTMLInputElement;
-    // input key
+    // input type selector
     private selectType: HTMLSelectElement;
     // input value
     private gInValue : any;
@@ -76,7 +76,7 @@ export class LWWMap{
         this.selectType = this.gElem.appendChild(
             document.createElement("select"));
         this.selectType.id="mesTypes"
-        
+
         var mapTypes=["String","Int","Double","Boolean"]
         mapTypes.forEach(element => {
             var option = document.createElement("option");
@@ -98,13 +98,13 @@ export class LWWMap{
             (e:Event) => this.insert());
 
         this.selectType.addEventListener(
-                "change", 
+                "change",
                 (e:Event) => this.setValueType(this.selectType.value));
     }
 
     /**
      * Update the DOM with the new value type.
-     * 
+     *
      * @param type The new value type
      */
     private setValueType(type:string){
@@ -136,13 +136,14 @@ export class LWWMap{
 
     /**
      * Create a new line element ("li") with delete button
-     * and add it to the DOM.
+     *
+     * @remarks New line is not added to the map nor to the DOM
      *
      * @param type - The value type
      * @param key - The element key
      * @param value - The element value for the given key
      */
-    private newLine(type: string, key: string, value: string) {
+    private newLine(type: string, key: string, value: string): HTMLElement{
         let line = document.createElement("li");
         let lineDelBtn = line.appendChild(
             document.createElement("input"));
@@ -152,20 +153,7 @@ export class LWWMap{
             this.remove(type, key, line);
         });
         line.append(key + " -> " + value);
-        switch (type){
-            case "String":
-                this.gulString.appendChild(line);
-                break;
-            case "Int":
-                this.gulInt.appendChild(line);
-                break;
-            case "Double":
-                this.gulDouble.appendChild(line);
-                break;
-            case "Boolean":
-                this.gulBoolean.appendChild(line);
-                break;
-        }
+        return line;
     }
 
     /**
@@ -175,25 +163,32 @@ export class LWWMap{
      */
     public insert(){
         let ts = this.env.tick();
+        let line = this.newLine(this.selectType.value,
+                           this.gInKey.value,
+                           this.gInValue.value);
         switch (this.selectType.value){
             case "String":
                 this.elementsLWWMap.setString(this.gInKey.value,this.gInValue.value,ts);
+                this.gulString.appendChild(line);
                 break;
             case "Int":
                 this.elementsLWWMap.setInt(this.gInKey.value,this.gInValue.value,ts);
+                this.gulInt.appendChild(line);
                 break;
             case "Double":
                 this.elementsLWWMap.setDouble(this.gInKey.value,this.gInValue.value,ts);
+                this.gulDouble.appendChild(line);
                 break;
             case "Boolean":
                 if (this.gInValue.value=="true" || this.gInValue.value=="false"){
                     this.elementsLWWMap.setBoolean(this.gInKey.value,this.gInValue.value,ts);
+                    this.gulBoolean.appendChild(line);
                 }
                 break;
         }
         this.gInKey.value="";
         this.gInValue.value="";
-        this.render();
+        this.update();
     }
 
     /**
@@ -252,24 +247,34 @@ export class LWWMap{
             let iterator = iterators[index]
             while (iterator.hasNext()) {
                 let elem = iterator.next()
+                let line = this.newLine(type[index],
+                                        elem.first, elem.second);
                 switch (type[index]){
                     case "String":
-                        this.newLine(type[index], elem.first, elem.second);
+                        this.gulString.appendChild(line);
                         break;
                     case "Int":
-                        this.newLine(type[index], elem.first, elem.second);
+                        this.gulInt.appendChild(line);
                         break;
                     case "Double":
-                        this.newLine(type[index], elem.first, elem.second);
+                        this.gulDouble.appendChild(line);
                         break;
                     case "Boolean":
-                        this.newLine(type[index], elem.first, elem.second);
+                        this.gulBoolean.appendChild(line);
                         break;
                 }
             }
         }
-
         return this.gElem;
+    }
+
+    /**
+     * Update the displayed Version Vector after a change.
+     *
+     * Must be called by every user-facing method modifying state
+     */
+    private update(){
+        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     ////////// Synchronization methods //////////

@@ -137,6 +137,6 @@ export class MVRegister{
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsMVRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);
-        this.update();
+        this.render();
     }
 }

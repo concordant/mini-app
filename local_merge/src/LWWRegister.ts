@@ -137,6 +137,6 @@ export class LWWRegister{
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsLWWRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);
-        this.update();
+        this.render();
     }
 }

@@ -49,7 +49,7 @@ export class LWWRegister{
         this.gInValue = this.gElem.appendChild(
             document.createElement("input"));
         this.gInValue.type = "text";
-        this.gInValue.placeholder = "Enter The Value"; 
+        this.gInValue.placeholder = "Enter The Value";
 
         this.gInBtn = this.gElem.appendChild(
             document.createElement("input"));
@@ -74,10 +74,11 @@ export class LWWRegister{
         let ts = this.env.tick();
         this.elementsLWWRegister.set(value,ts);
         this.gDisplay.nodeValue=value;
+        this.update();
     }
 
     /**
-     * Update the DOM
+     * Update the DOM and returns the whole element
      *
      * @returns the whole component
      */
@@ -85,6 +86,13 @@ export class LWWRegister{
         this.gVV.nodeValue = vvToString(this.getState().vv);
         this.gDisplay.nodeValue=this.elementsLWWRegister.get();
         return this.gElem;
+    }
+
+    /**
+     * Update the displayed Version Vector after a change.
+     */
+    private update(){
+        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     ////////// Synchronization methods //////////

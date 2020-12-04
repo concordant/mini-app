@@ -77,7 +77,6 @@ export class GList{
 
     /**
      * Create a new line element ("li") with delete button
-     * and add it to the DOM
      *
      * @remarks New line is not added to the list ;
      * see {@link RGASimpleList.append} and {@link RGASimpleList.insertAt}
@@ -125,7 +124,7 @@ export class GList{
         this.elementsRGA.insertAt(index,
                                   value,
                                   ts);
-        this.gul.insertBefore(this.newLine(value), lis[index]);
+        this.gul.insertBefore(this.newLine(value), ref);
         this.update();
     }
 

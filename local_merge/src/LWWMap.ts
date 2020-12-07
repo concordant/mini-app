@@ -26,6 +26,8 @@ export class LWWMap{
     // displayed boolean list, with delete buttons
     private gulBoolean: HTMLElement;
 
+    private gliMap: any = {};
+
     // input key
     private gInKey: HTMLInputElement;
     // input type selector
@@ -143,7 +145,7 @@ export class LWWMap{
      * @param key - The element key
      * @param value - The element value for the given key
      */
-    private newLine(type: string, key: string, value: string): HTMLElement{
+    private newLine(type: string, key: string, value: string): HTMLLIElement{
         let line = document.createElement("li");
         let lineDelBtn = line.appendChild(
             document.createElement("input"));
@@ -152,7 +154,7 @@ export class LWWMap{
         lineDelBtn.addEventListener("click", (e:Event) => {
             this.remove(type, key, line);
         });
-        line.append(key + " -> " + value);
+        line.appendChild(document.createTextNode(" " + key + " -> " + value));
         return line;
     }
 
@@ -163,26 +165,44 @@ export class LWWMap{
      */
     public insert(){
         let ts = this.env.tick();
-        let line = this.newLine(this.selectType.value,
-                           this.gInKey.value,
-                           this.gInValue.value);
+
+        let line : HTMLLIElement = this.gliMap[this.gInKey.value + this.selectType.value];
+        let isNew : boolean = false
+        if (line == undefined) {
+            line = this.newLine(this.selectType.value,
+                this.gInKey.value,
+                this.gInValue.value);
+            this.gliMap[this.gInKey.value + this.selectType.value] = line
+            isNew = true
+        } else {
+            line.childNodes[1].textContent = " " + this.gInKey.value + " -> " + this.gInValue.value
+        }
         switch (this.selectType.value){
             case "String":
-                this.elementsLWWMap.setString(this.gInKey.value,this.gInValue.value,ts);
-                this.gulString.appendChild(line);
+                this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value, ts);
+                if (isNew) {
+                    this.gulString.appendChild(line);
+                }
                 break;
             case "Int":
-                this.elementsLWWMap.setInt(this.gInKey.value,this.gInValue.value,ts);
-                this.gulInt.appendChild(line);
+                this.elementsLWWMap.setInt(this.gInKey.value, this.gInValue.value, ts);
+                if (isNew) {
+                    this.gulInt.appendChild(line);
+                }
+                
                 break;
             case "Double":
-                this.elementsLWWMap.setDouble(this.gInKey.value,this.gInValue.value,ts);
-                this.gulDouble.appendChild(line);
+                this.elementsLWWMap.setDouble(this.gInKey.value, this.gInValue.value, ts);
+                if (isNew) {
+                    this.gulDouble.appendChild(line);
+                }
                 break;
             case "Boolean":
                 if (this.gInValue.value=="true" || this.gInValue.value=="false"){
-                    this.elementsLWWMap.setBoolean(this.gInKey.value,this.gInValue.value,ts);
-                    this.gulBoolean.appendChild(line);
+                    this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value, ts);
+                    if (isNew) {
+                        this.gulBoolean.appendChild(line);
+                    }
                 }
                 break;
         }
@@ -232,6 +252,8 @@ export class LWWMap{
     public render(): HTMLElement{
         this.gVV.nodeValue = vvToString(this.getState().vv);
 
+        this.gliMap = {}
+
         this.gulString.innerHTML = "";
         this.gulInt.innerHTML = "";
         this.gulDouble.innerHTML = "";
@@ -249,6 +271,7 @@ export class LWWMap{
                 let elem = iterator.next()
                 let line = this.newLine(type[index],
                                         elem.first, elem.second);
+                this.gliMap[elem.first + type[index]] = line
                 switch (type[index]){
                     case "String":
                         this.gulString.appendChild(line);

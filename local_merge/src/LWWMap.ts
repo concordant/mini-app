@@ -26,6 +26,7 @@ export class LWWMap{
     // displayed boolean list, with delete buttons
     private gulBoolean: HTMLElement;
 
+    // keep track of HTML lines for update operations on existent keys
     private gliMap: any = {};
 
     // input key
@@ -152,7 +153,7 @@ export class LWWMap{
         lineDelBtn.type = "button";
         lineDelBtn.value = "X";
         lineDelBtn.addEventListener("click", (e:Event) => {
-            this.remove(type, key, line);
+            this.remove(type, key);
         });
         line.appendChild(document.createTextNode(" " + key + " -> " + value));
         return line;
@@ -216,11 +217,13 @@ export class LWWMap{
      *
      * @param type The value type
      * @param key The element key
-     * @param line The line element to remove
      * @remarks Triggered by the "X" button onclick
      */
-    public remove(type:string, key:string, line: HTMLElement){
+    public remove(type:string, key:string){
         let ts = this.env.tick();
+
+        let line = this.gliMap[key + type]
+        delete this.gliMap[key + type]
 
         let parentList = line.parentElement;
         if (! parentList)

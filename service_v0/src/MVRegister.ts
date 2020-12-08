@@ -24,7 +24,6 @@ export class MVRegister{
     private gInBtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
-        console.log(typeof crdtlib.crdt.MVRegister);
         this.env = env;
         this.elementsMVRegister = new crdtlib.crdt.MVRegister();
 
@@ -49,7 +48,7 @@ export class MVRegister{
         this.gInValue = this.gElem.appendChild(
             document.createElement("input"));
         this.gInValue.type = "text";
-        this.gInValue.placeholder = "Enter The Value"; 
+        this.gInValue.placeholder = "Enter The Value";
 
         this.gInBtn = this.gElem.appendChild(
             document.createElement("input"));
@@ -68,7 +67,7 @@ export class MVRegister{
     /**
      * Insert value
      *
-     * @remarks triggeres by the "Add" button onclick
+     * @remarks triggered by the "Add" button onclick
      */
     public insert(value: string){
         let ts = this.env.tick();
@@ -77,7 +76,7 @@ export class MVRegister{
     }
 
     /**
-     * Update the DOM
+     * Update the DOM and returns the whole element
      *
      * @returns the whole component
      */
@@ -85,6 +84,15 @@ export class MVRegister{
         this.gVV.nodeValue = vvToString(this.getState().vv);
         this.gDisplay.nodeValue=this.elementsMVRegister.get();
         return this.gElem;
+    }
+
+    /**
+     * Update the displayed Version Vector after a change.
+     *
+     * Must be called by every user-facing method modifying state
+     */
+    private update(){
+        this.gVV.nodeValue = vvToString(this.getState().vv);
     }
 
     ////////// Synchronization methods //////////

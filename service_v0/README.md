@@ -6,7 +6,8 @@ This app exercises the usage of CRDTs on the client-side with very simple exampl
 
 You need an installation of the `npm` JavaScript package manager.
 
-- The project uses the CRDT library from Concordant private registry: [see Usage section](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/blob/master/README.md).
+- The project uses the CRDT library from [Concordant private registry](
+https://gitlab.inria.fr/concordant/software/c-crdtlib/-/blob/master/README.md#usage).
 - The `browserify` packages bundles all npm modules required such that you only need to include the bundle in the html page using one `<script>` tag.
 - Further, the `typescript` package allows to transpile Typescript code to JavaScript.
 

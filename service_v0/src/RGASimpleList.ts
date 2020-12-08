@@ -26,12 +26,15 @@ export class GList{
     private ginbtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
-        console.log(typeof crdtlib.crdt.RGA);
         this.env = env;
         this.elementsRGA = new crdtlib.crdt.RGA();
 
         this.glist = document.createElement("div");
 
+        // refresh button, for debugging purpose:
+        // render from scratch the whole list according to internal state
+        // → should not generate any visible change,
+        //   as each update is already applied separately
         let refreshBtn = this.glist.appendChild(
             document.createElement("input"));
         refreshBtn.type = "button";
@@ -40,6 +43,7 @@ export class GList{
             "click",
             (e:Event) => this.render());
 
+        // current Version Vector (debug).
         this.gVV = this.glist.appendChild(document.createTextNode(""));
         this.gul = this.glist.appendChild(document.createElement("ul"));
 
@@ -73,10 +77,9 @@ export class GList{
 
     /**
      * Create a new line element ("li") with delete button
-     * and add it to the DOM
      *
      * @remarks New line is not added to the list ;
-     * see {@link GList.append} and {@link GList.insertAt}
+     * see {@link RGASimpleList.append} and {@link RGASimpleList.insertAt}
      *
      * @param value - Content of the key
      * @returns The new line
@@ -86,7 +89,7 @@ export class GList{
         let lineDelBtn = line.appendChild(
             document.createElement("input"));
         lineDelBtn.type = "button";
-        lineDelBtn.value = "x";
+        lineDelBtn.value = "X";
         lineDelBtn.addEventListener("click", (e:Event) => {
             this.remove(line);
         });
@@ -105,6 +108,7 @@ export class GList{
                                   value,
                                   ts);
         this.gul.appendChild(this.newLine(value));
+        this.update();
     }
 
     /**
@@ -120,7 +124,8 @@ export class GList{
         this.elementsRGA.insertAt(index,
                                   value,
                                   ts);
-        this.gul.insertBefore(this.newLine(value), lis[index]);
+        this.gul.insertBefore(this.newLine(value), ref);
+        this.update();
     }
 
     /**
@@ -145,7 +150,7 @@ export class GList{
     /**
      * Insert typed value at given index and reset input boxes
      *
-     * @remarks triggeres by the "Add" button onclick
+     * @remarks triggered by the "Add" button onclick
      */
     public doInsert(){
         let i = this.insertAtStr(this.gindex.value, this.gintext.value);
@@ -170,6 +175,7 @@ export class GList{
         this.elementsRGA.removeAt(index,
                                   ts);
         line.remove();
+        this.update();
     }
 
     /**
@@ -188,12 +194,19 @@ export class GList{
         // then populate :
         // convert to Array to workaround
         // [#32](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/32)
-        for (let v of this.elementsRGA.get().toArray()){
-            this.gul.appendChild(this.newLine(v));
+        let iterator = this.elementsRGA.iterator()
+        while (iterator.hasNext()){
+            this.gul.appendChild(this.newLine(iterator.next()));
         }
         return this.glist;
     }
 
+    /**
+     * Update the displayed Version Vector after a change.
+     */
+    private update(){
+        this.gVV.nodeValue = vvToString(this.getState().vv);
+    }
 
     ////////// Synchronization methods //////////
 

@@ -24,7 +24,6 @@ export class LWWRegister{
     private gInBtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
-        console.log(typeof crdtlib.crdt.LWWRegister);
         this.env = env;
         let ts = this.env.tick();
         this.elementsLWWRegister = new crdtlib.crdt.LWWRegister("",ts);
@@ -138,6 +137,6 @@ export class LWWRegister{
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsLWWRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);
-        this.update();
+        this.render();
     }
 }

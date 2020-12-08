@@ -24,7 +24,6 @@ export class MVRegister{
     private gInBtn: HTMLInputElement;
 
     constructor(env: crdtlib.utils.Environment){
-        console.log(typeof crdtlib.crdt.MVRegister);
         this.env = env;
         this.elementsMVRegister = new crdtlib.crdt.MVRegister();
 
@@ -68,7 +67,7 @@ export class MVRegister{
     /**
      * Insert value
      *
-     * @remarks triggeres by the "Add" button onclick
+     * @remarks triggered by the "Add" button onclick
      */
     public insert(value: string){
         let ts = this.env.tick();
@@ -138,6 +137,6 @@ export class MVRegister{
                   vv: crdtlib.crdt.VersionVector}){
         this.elementsMVRegister.merge(delta.delta);
         this.env.updateVv(delta.vv);
-        this.update();
+        this.render();
     }
 }

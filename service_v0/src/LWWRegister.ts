@@ -25,8 +25,7 @@ export class LWWRegister{
 
     constructor(env: crdtlib.utils.Environment){
         this.env = env;
-        let ts = this.env.tick();
-        this.elementsLWWRegister = new crdtlib.crdt.LWWRegister("",ts);
+        this.elementsLWWRegister = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("LWWRegister", this.env);
 
         this.gElem = document.createElement("div");
 
@@ -71,8 +70,7 @@ export class LWWRegister{
      * @remarks triggered by the "Add" button onclick
      */
     public insert(value: string){
-        let ts = this.env.tick();
-        this.elementsLWWRegister.set(value,ts);
+        this.elementsLWWRegister.set(value);
         this.gDisplay.nodeValue=value;
         this.update();
     }

@@ -25,7 +25,7 @@ export class MVRegister{
 
     constructor(env: crdtlib.utils.Environment){
         this.env = env;
-        this.elementsMVRegister = new crdtlib.crdt.MVRegister();
+        this.elementsMVRegister = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("MVRegister", this.env);
 
         this.gElem = document.createElement("div");
 
@@ -70,8 +70,7 @@ export class MVRegister{
      * @remarks triggered by the "Add" button onclick
      */
     public insert(value: string){
-        let ts = this.env.tick();
-        this.elementsMVRegister.set(value,ts);
+        this.elementsMVRegister.set(value);
         this.gDisplay.nodeValue=this.elementsMVRegister.get();
     }
 

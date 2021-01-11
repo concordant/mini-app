@@ -47,7 +47,7 @@ export class LWWMap{
           }
 
         this.env = env;
-        this.elementsLWWMap = new crdtlib.crdt.LWWMap();
+        this.elementsLWWMap = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("LWWMap", this.env);
 
         this.gElem = document.createElement("div");
 
@@ -80,7 +80,7 @@ export class LWWMap{
             document.createElement("select"));
         this.selectType.id="mesTypes"
 
-        var mapTypes=["String","Int","Double","Boolean"]
+        var mapTypes=["String", "Int", "Double", "Boolean"]
         mapTypes.forEach(element => {
             var option = document.createElement("option");
             option.value=element;
@@ -165,7 +165,6 @@ export class LWWMap{
      * @remarks triggered by the "Add" button onclick
      */
     public insert(){
-        let ts = this.env.tick();
 
         let line : HTMLLIElement = this.gliMap[this.gInKey.value + this.selectType.value];
         let isNew : boolean = false
@@ -180,27 +179,27 @@ export class LWWMap{
         }
         switch (this.selectType.value){
             case "String":
-                this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value, ts);
+                this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value);
                 if (isNew) {
                     this.gulString.appendChild(line);
                 }
                 break;
             case "Int":
-                this.elementsLWWMap.setInt(this.gInKey.value, this.gInValue.value, ts);
+                this.elementsLWWMap.setInt(this.gInKey.value, this.gInValue.value);
                 if (isNew) {
                     this.gulInt.appendChild(line);
                 }
                 
                 break;
             case "Double":
-                this.elementsLWWMap.setDouble(this.gInKey.value, this.gInValue.value, ts);
+                this.elementsLWWMap.setDouble(this.gInKey.value, this.gInValue.value);
                 if (isNew) {
                     this.gulDouble.appendChild(line);
                 }
                 break;
             case "Boolean":
                 if (this.gInValue.value=="true" || this.gInValue.value=="false"){
-                    this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value, ts);
+                    this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value);
                     if (isNew) {
                         this.gulBoolean.appendChild(line);
                     }
@@ -220,7 +219,6 @@ export class LWWMap{
      * @remarks Triggered by the "X" button onclick
      */
     public remove(type:string, key:string){
-        let ts = this.env.tick();
 
         let line = this.gliMap[key + type]
         delete this.gliMap[key + type]
@@ -233,16 +231,16 @@ export class LWWMap{
 
         switch (type){
             case "String":
-                this.elementsLWWMap.deleteString(key, ts);
+                this.elementsLWWMap.deleteString(key);
                 break;
             case "Int":
-                this.elementsLWWMap.deleteInt(key, ts);
+                this.elementsLWWMap.deleteInt(key);
                 break;
             case "Double":
-                this.elementsLWWMap.deleteDouble(key, ts);
+                this.elementsLWWMap.deleteDouble(key);
                 break;
             case "Boolean":
-                this.elementsLWWMap.deleteBoolean(key, ts);
+                this.elementsLWWMap.deleteBoolean(key);
                 break;
         }
     }

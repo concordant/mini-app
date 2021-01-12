@@ -1,7 +1,7 @@
 import { crdtlib } from '@concordant/c-crdtlib';
 import { client } from '@concordant/c-client';
 
-let session = client.Session.Companion.connect("miniApp", "credentials");
+let session = client.Session.Companion.connect("miniapp", "credentials");
 let collection = session.openCollection("miniAppCollection", false);
 
 let cntr = collection.open("mycounter", "PNCounter", false, function (a: any, b:any) {return});
@@ -12,7 +12,7 @@ var cntlabel_crdt = document.getElementById('cnt_crdt'); // find the HTML elemen
 export function incrLabel() {
     // this function is executed whenever the user clicks the increment button
     if (cntlabel_crdt) {
-        session.transaction(client.ConsistencyLevel.RC, () => {
+        session.transaction(client.utils.ConsistencyLevel.RC, () => {
             cntr.increment(1);
             if (cntlabel_crdt){
                 cntlabel_crdt.textContent = cntr.get()
@@ -24,7 +24,7 @@ export function incrLabel() {
 export function decrLabel() {
     // this function is executed whenever the user clicks the decrement button
     if (cntlabel_crdt) {
-        session.transaction(client.ConsistencyLevel.RC, () => {
+        session.transaction(client.utils.ConsistencyLevel.RC, () => {
             cntr.decrement(1);
             if (cntlabel_crdt){
                 cntlabel_crdt.textContent = cntr.get()

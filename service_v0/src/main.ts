@@ -1,7 +1,10 @@
 import { crdtlib } from '@concordant/c-crdtlib';
+import { client } from '@concordant/c-client';
 
-let env = new crdtlib.utils.SimpleEnvironment(new crdtlib.utils.ClientUId("myClientId"));
-let cntr = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("PNCounter", env);
+let session = client.Session.Companion.connect("miniApp", "credentials");
+let collection = session.openCollection("miniAppCollection", false);
+
+let cntr = collection.open("mycounter", "PNCounter", false, function (a: any, b:any) {return});
 
 // labels
 var cntlabel_crdt = document.getElementById('cnt_crdt'); // find the HTML element in the DOM

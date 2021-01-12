@@ -10,7 +10,8 @@
   "author": "Annette Bieniusa",
   "license": "MIT",
   "dependencies": {
-    "@concordant/c-crdtlib": "1.0.1"
+    "@concordant/c-crdtlib": "1.0.1",
+    "@concordant/c-client": "file:../../c-client/build/publications/npm/concordant-c-client-0.0.1.tgz"
   },
   "devDependencies": {
     "browserify": "^16.5.1",

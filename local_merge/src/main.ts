@@ -1,8 +1,7 @@
-import { crdtlib as crdtl } from '@concordant/c-crdtlib';
+import { crdtlib } from '@concordant/c-crdtlib';
 
-let env = new crdtl.utils.SimpleEnvironment(
-    new crdtl.utils.ClientUId("myClientId"));
-let cntr = new crdtl.crdt.PNCounter();
+let env = new crdtlib.utils.SimpleEnvironment(new crdtlib.utils.ClientUId("myClientId"));
+let cntr = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("PNCounter", env);
 
 // labels
 var cntlabel_crdt = document.getElementById('cnt_crdt'); // find the HTML element in the DOM
@@ -10,7 +9,7 @@ var cntlabel_crdt = document.getElementById('cnt_crdt'); // find the HTML elemen
 export function incrLabel() {
     // this function is executed whenever the user clicks the increment button
     if (cntlabel_crdt) {
-        cntr.increment(1, env.tick());
+        cntr.increment(1);
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }
@@ -18,7 +17,7 @@ export function incrLabel() {
 export function decrLabel() {
     // this function is executed whenever the user clicks the decrement button
    if (cntlabel_crdt) {
-        cntr.decrement(1, env.tick());
+        cntr.decrement(1);
         cntlabel_crdt.textContent = cntr.get().toString()
     }
 }
@@ -31,12 +30,12 @@ if (listsRoot == null){
     throw new Error("root element is missing in DOM");
 }
 
-let envA = new crdtl.utils.SimpleEnvironment(
-    new crdtl.utils.ClientUId("myClientA"));
+let envA = new crdtlib.utils.SimpleEnvironment(
+    new crdtlib.utils.ClientUId("myClientA"));
 var glA = new GList(envA);
 
-let envB = new crdtl.utils.SimpleEnvironment(
-        new crdtl.utils.ClientUId("myClientB"));
+let envB = new crdtlib.utils.SimpleEnvironment(
+        new crdtlib.utils.ClientUId("myClientB"));
 var glB = new GList(envB);
 
 // propagate from A to B (full state)
@@ -71,12 +70,12 @@ if (myLWWMap == null){
     throw new Error("my_lwwmap element is missing in DOM");
 }
 
-let envC = new crdtl.utils.SimpleEnvironment(
-    new crdtl.utils.ClientUId("myClientC"));
+let envC = new crdtlib.utils.SimpleEnvironment(
+    new crdtlib.utils.ClientUId("myClientC"));
 var mapC = new LWWMap(envC);
 
-let envD = new crdtl.utils.SimpleEnvironment(
-        new crdtl.utils.ClientUId("myClientD"));
+let envD = new crdtlib.utils.SimpleEnvironment(
+        new crdtlib.utils.ClientUId("myClientD"));
 var mapD = new LWWMap(envD);
 
 let CtoD = document.createElement("input");
@@ -110,12 +109,12 @@ if (myLWWRegister == null){
     throw new Error("my_lwwregister element is missing in DOM");
 }
 
-let envE = new crdtl.utils.SimpleEnvironment(
-    new crdtl.utils.ClientUId("myClientE"));
+let envE = new crdtlib.utils.SimpleEnvironment(
+    new crdtlib.utils.ClientUId("myClientE"));
 var lregisterE = new LWWRegister(envE);
 
-let envF = new crdtl.utils.SimpleEnvironment(
-        new crdtl.utils.ClientUId("myClientF"));
+let envF = new crdtlib.utils.SimpleEnvironment(
+        new crdtlib.utils.ClientUId("myClientF"));
 var lregisterF = new LWWRegister(envF);
 
 let EtoF = document.createElement("input");
@@ -149,12 +148,12 @@ if (myMVRegister == null){
     throw new Error("my_mvregister element is missing in DOM");
 }
 
-let envG = new crdtl.utils.SimpleEnvironment(
-    new crdtl.utils.ClientUId("myClientG"));
+let envG = new crdtlib.utils.SimpleEnvironment(
+    new crdtlib.utils.ClientUId("myClientG"));
 var mvrg = new MVRegister(envG);
 
-let envH = new crdtl.utils.SimpleEnvironment(
-        new crdtl.utils.ClientUId("myClientH"));
+let envH = new crdtlib.utils.SimpleEnvironment(
+        new crdtlib.utils.ClientUId("myClientH"));
 var mvrh = new MVRegister(envH);
 
 let GtoH = document.createElement("input");

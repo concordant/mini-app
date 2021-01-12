@@ -27,7 +27,7 @@ export class GList{
 
     constructor(env: crdtlib.utils.Environment){
         this.env = env;
-        this.elementsRGA = new crdtlib.crdt.RGA();
+        this.elementsRGA = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("RGA", this.env);
 
         this.glist = document.createElement("div");
 
@@ -103,10 +103,7 @@ export class GList{
      * @param value - The content of the line
      */
     public append(value: string){
-        let ts = this.env.tick();
-        this.elementsRGA.insertAt(this.elementsRGA.get().size,
-                                  value,
-                                  ts);
+        this.elementsRGA.insertAt(this.elementsRGA.get().size, value);
         this.gul.appendChild(this.newLine(value));
         this.update();
     }
@@ -120,10 +117,7 @@ export class GList{
     public insertAt(index: number, value: string){
         let lis = this.gul.children;
         let ref = index < lis.length ? lis[index] : null;
-        let ts = this.env.tick();
-        this.elementsRGA.insertAt(index,
-                                  value,
-                                  ts);
+        this.elementsRGA.insertAt(index, value);
         this.gul.insertBefore(this.newLine(value), ref);
         this.update();
     }
@@ -170,10 +164,7 @@ export class GList{
                 + "Are you trying to make me kill an orphan ?")
         let index = Array.prototype.indexOf.call(
             parentList.children, line);
-
-        let ts = this.env.tick();
-        this.elementsRGA.removeAt(index,
-                                  ts);
+        this.elementsRGA.removeAt(index);
         line.remove();
         this.update();
     }

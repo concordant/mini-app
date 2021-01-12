@@ -12,16 +12,24 @@ var cntlabel_crdt = document.getElementById('cnt_crdt'); // find the HTML elemen
 export function incrLabel() {
     // this function is executed whenever the user clicks the increment button
     if (cntlabel_crdt) {
-        cntr.increment(1);
-        cntlabel_crdt.textContent = cntr.get().toString()
+        session.transaction(client.ConsistencyLevel.RC, () => {
+            cntr.increment(1);
+            if (cntlabel_crdt){
+                cntlabel_crdt.textContent = cntr.get()
+            }
+        })
     }
 }
 
 export function decrLabel() {
     // this function is executed whenever the user clicks the decrement button
-   if (cntlabel_crdt) {
-        cntr.decrement(1);
-        cntlabel_crdt.textContent = cntr.get().toString()
+    if (cntlabel_crdt) {
+        session.transaction(client.ConsistencyLevel.RC, () => {
+            cntr.decrement(1);
+            if (cntlabel_crdt){
+                cntlabel_crdt.textContent = cntr.get()
+            }
+        })
     }
 }
 

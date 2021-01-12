@@ -1,8 +1,5 @@
 import { crdtlib } from '@concordant/c-crdtlib';
-
-function vvToString(vv: any){
-    return vv.toJson();
-}
+import { client } from '@concordant/c-client';
 
 export class LWWRegister{
     // CRDTlib objects declared as "any" to workaround
@@ -11,11 +8,10 @@ export class LWWRegister{
     private env: any; //crdtlib.utils.Environment;
     // the LWWRegister
     private elementsLWWRegister: any; //: crdtlib.crdt.LWWRegister;
+    private session: any;
 
     // whole list component
     private gElem: HTMLElement;
-    // version vector
-    private gVV: Text;
     // displayed register value
     private gDisplay: Text;
     // input value
@@ -23,9 +19,9 @@ export class LWWRegister{
     // insert
     private gInBtn: HTMLInputElement;
 
-    constructor(env: crdtlib.utils.Environment){
-        this.env = env;
-        this.elementsLWWRegister = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("LWWRegister", this.env);
+    constructor(session: any, collection: any){
+        this.session = session;
+        this.elementsLWWRegister = collection.open("mylwwregister", "LWWRegister", false, function () {return});
 
         this.gElem = document.createElement("div");
 
@@ -37,11 +33,13 @@ export class LWWRegister{
             "click",
             (e:Event) => this.render());
 
-        this.gVV = this.gElem.appendChild(document.createTextNode(""));
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createTextNode("Register value : "));
-        this.gDisplay = this.gElem.appendChild(document.createTextNode(this.elementsLWWRegister.get()));
+        this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.gDisplay.nodeValue=this.elementsLWWRegister.get();
+        }) 
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
 
@@ -70,9 +68,10 @@ export class LWWRegister{
      * @remarks triggered by the "Add" button onclick
      */
     public insert(value: string){
-        this.elementsLWWRegister.set(value);
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.elementsLWWRegister.set(value);
+        })
         this.gDisplay.nodeValue=value;
-        this.update();
     }
 
     /**
@@ -81,60 +80,9 @@ export class LWWRegister{
      * @returns the whole component
      */
     public render(): HTMLElement{
-        this.gVV.nodeValue = vvToString(this.getState().vv);
-        this.gDisplay.nodeValue=this.elementsLWWRegister.get();
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.gDisplay.nodeValue=this.elementsLWWRegister.get();
+        })
         return this.gElem;
-    }
-
-    /**
-     * Update the displayed Version Vector after a change.
-     */
-    private update(){
-        this.gVV.nodeValue = vvToString(this.getState().vv);
-    }
-
-    ////////// Synchronization methods //////////
-
-    /**
-     * Get current state: LWWregister & current version vector
-     *
-     * @remarks
-     * There should be an interface containing both.
-     *
-     * @returns the current (full) state
-     */
-    public getState(): {delta: crdtlib.crdt.LWWRegister,
-                        vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsLWWRegister, vv: this.env.getState()};
-    }
-
-    /**
-     * Compute a delta from a given version vector
-     *
-     * @param vv - current version vector of another replica,
-     * used as origin for the delta
-     * @returns the generated delta, with current version vector
-     * (same structure as {@link LWWRegister.getState})
-     */
-    public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT,
-     vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsLWWRegister.generateDelta(vv),
-                vv: this.env.getState()};
-    }
-
-    /**
-     * Merge a delta or state into this replica
-     *
-     * @param delta - the delta, as returned
-     * by {@link LWWRegister.getState}
-     * or {@link LWWRegister.getDeltaFrom}
-     */
-    public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT,
-                  vv: crdtlib.crdt.VersionVector}){
-        this.elementsLWWRegister.merge(delta.delta);
-        this.env.updateVv(delta.vv);
-        this.render();
     }
 }

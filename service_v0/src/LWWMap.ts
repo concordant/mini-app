@@ -1,8 +1,5 @@
 import { crdtlib } from '@concordant/c-crdtlib';
-
-function vvToString(vv: any){
-    return vv.toJson();
-}
+import { client } from '@concordant/c-client';
 
 export class LWWMap{
     // CRDTlib objects declared as "any" to workaround
@@ -11,12 +8,10 @@ export class LWWMap{
     private env: any; //crdtlib.utils.Environment;
     // the LWWMap
     private elementsLWWMap: any; //: crdtlib.crdt.LWWMap;
+    private session: any;
 
     // whole list component
     private gElem: HTMLElement;
-    // version vector
-    private gVV: Text;
-
     // displayed string list, with delete buttons
     private gulString: HTMLElement;
     // displayed integer list, with delete buttons
@@ -38,7 +33,7 @@ export class LWWMap{
     // insert button
     private gInBtn: HTMLInputElement;
 
-    constructor(env: crdtlib.utils.Environment){
+    constructor(session: any, collection: any){
         enum MapTypes {
             String,
             Int,
@@ -46,8 +41,8 @@ export class LWWMap{
             Boolean
           }
 
-        this.env = env;
-        this.elementsLWWMap = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("LWWMap", this.env);
+        this.session = session;
+        this.elementsLWWMap = collection.open("mylwwmap", "LWWMap", false, function () {return});
 
         this.gElem = document.createElement("div");
 
@@ -59,7 +54,6 @@ export class LWWMap{
             "click",
             (e:Event) => this.render());
 
-        this.gVV = this.gElem.appendChild(document.createTextNode(""));
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createTextNode("String values :"));
@@ -177,38 +171,38 @@ export class LWWMap{
         } else {
             line.childNodes[1].textContent = " " + this.gInKey.value + " -> " + this.gInValue.value
         }
-        switch (this.selectType.value){
-            case "String":
-                this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value);
-                if (isNew) {
-                    this.gulString.appendChild(line);
-                }
-                break;
-            case "Int":
-                this.elementsLWWMap.setInt(this.gInKey.value, this.gInValue.value);
-                if (isNew) {
-                    this.gulInt.appendChild(line);
-                }
-                
-                break;
-            case "Double":
-                this.elementsLWWMap.setDouble(this.gInKey.value, this.gInValue.value);
-                if (isNew) {
-                    this.gulDouble.appendChild(line);
-                }
-                break;
-            case "Boolean":
-                if (this.gInValue.value=="true" || this.gInValue.value=="false"){
-                    this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value);
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            switch (this.selectType.value){
+                case "String":
+                    this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value);    
                     if (isNew) {
-                        this.gulBoolean.appendChild(line);
+                        this.gulString.appendChild(line);
                     }
-                }
-                break;
-        }
+                    break;
+                case "Int":
+                    this.elementsLWWMap.setInt(this.gInKey.value, this.gInValue.value);
+                    if (isNew) {
+                        this.gulInt.appendChild(line);
+                    }
+                    break;
+                case "Double":
+                    this.elementsLWWMap.setDouble(this.gInKey.value, this.gInValue.value);
+                    if (isNew) {
+                        this.gulDouble.appendChild(line);
+                    }
+                    break;
+                case "Boolean":
+                    if (this.gInValue.value=="true" || this.gInValue.value=="false"){
+                        this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value);
+                        if (isNew) {
+                            this.gulBoolean.appendChild(line);
+                        }
+                    }
+                    break;
+            }
+        })
         this.gInKey.value="";
         this.gInValue.value="";
-        this.update();
     }
 
     /**
@@ -229,20 +223,22 @@ export class LWWMap{
                 + "Are you trying to make me kill an orphan ?")
         line.remove();
 
-        switch (type){
-            case "String":
-                this.elementsLWWMap.deleteString(key);
-                break;
-            case "Int":
-                this.elementsLWWMap.deleteInt(key);
-                break;
-            case "Double":
-                this.elementsLWWMap.deleteDouble(key);
-                break;
-            case "Boolean":
-                this.elementsLWWMap.deleteBoolean(key);
-                break;
-        }
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            switch (type){
+                case "String":
+                    this.elementsLWWMap.deleteString(key);
+                    break;
+                case "Int":
+                    this.elementsLWWMap.deleteInt(key);
+                    break;
+                case "Double":
+                    this.elementsLWWMap.deleteDouble(key);
+                    break;
+                case "Boolean":
+                    this.elementsLWWMap.deleteBoolean(key);
+                    break;
+            }
+        })
     }
 
     /**
@@ -251,7 +247,6 @@ export class LWWMap{
      * @returns the whole component
      */
     public render(): HTMLElement{
-        this.gVV.nodeValue = vvToString(this.getState().vv);
 
         this.gliMap = {}
 
@@ -260,89 +255,37 @@ export class LWWMap{
         this.gulDouble.innerHTML = "";
         this.gulBoolean.innerHTML = "";
 
-        let iterators = [this.elementsLWWMap.iteratorString(),
-            this.elementsLWWMap.iteratorInt(),
-            this.elementsLWWMap.iteratorDouble(),
-            this.elementsLWWMap.iteratorBoolean()]
-        let type = ["String", "Int", "Double", "Boolean"]
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            let iterators = [this.elementsLWWMap.iteratorString(),
+                this.elementsLWWMap.iteratorInt(),
+                this.elementsLWWMap.iteratorDouble(),
+                this.elementsLWWMap.iteratorBoolean()]
+            let type = ["String", "Int", "Double", "Boolean"]
 
-        for (let index in iterators) {
-            let iterator = iterators[index]
-            while (iterator.hasNext()) {
-                let elem = iterator.next()
-                let line = this.newLine(type[index],
-                                        elem.first, elem.second);
-                this.gliMap[elem.first + type[index]] = line
-                switch (type[index]){
-                    case "String":
-                        this.gulString.appendChild(line);
-                        break;
-                    case "Int":
-                        this.gulInt.appendChild(line);
-                        break;
-                    case "Double":
-                        this.gulDouble.appendChild(line);
-                        break;
-                    case "Boolean":
-                        this.gulBoolean.appendChild(line);
-                        break;
+            for (let index in iterators) {
+                let iterator = iterators[index]
+                while (iterator.hasNext()) {
+                    let elem = iterator.next()
+                    let line = this.newLine(type[index],
+                                            elem.first, elem.second);
+                    this.gliMap[elem.first + type[index]] = line
+                    switch (type[index]){
+                        case "String":
+                            this.gulString.appendChild(line);
+                            break;
+                        case "Int":
+                            this.gulInt.appendChild(line);
+                            break;
+                        case "Double":
+                            this.gulDouble.appendChild(line);
+                            break;
+                        case "Boolean":
+                            this.gulBoolean.appendChild(line);
+                            break;
+                    }
                 }
             }
-        }
+        })
         return this.gElem;
-    }
-
-    /**
-     * Update the displayed Version Vector after a change.
-     *
-     * Must be called by every user-facing method modifying state
-     */
-    private update(){
-        this.gVV.nodeValue = vvToString(this.getState().vv);
-    }
-
-    ////////// Synchronization methods //////////
-
-    /**
-     * Get current state: LWWMap & current version vector
-     *
-     * @remarks
-     * There should be an interface containing both.
-     *
-     * @returns the current (full) state
-     */
-    public getState(): {delta: crdtlib.crdt.LWWMap,
-                        vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsLWWMap, vv: this.env.getState()};
-    }
-
-    /**
-     * Compute a delta from a given version vector
-     *
-     * @param vv - current version vector of another replica,
-     * used as origin for the delta
-     * @returns the generated delta, with current version vector
-     * (same structure as {@link LWWMap.getState})
-     */
-    public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT,
-     vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsLWWMap.generateDelta(vv),
-                vv: this.env.getState()};
-    }
-
-    /**
-     * Merge a delta or state into this replica
-     *
-     * @param delta - the delta, as returned
-     * by {@link LWWMap.getState}
-     * or {@link LWWMap.getDeltaFrom}
-     */
-    public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT,
-                  vv: crdtlib.crdt.VersionVector}){
-        this.elementsLWWMap.merge(delta.delta);
-        this.env.updateVv(delta.vv);
-        this.render();
     }
 }

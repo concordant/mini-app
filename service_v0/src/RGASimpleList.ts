@@ -1,8 +1,5 @@
 import { crdtlib } from '@concordant/c-crdtlib';
-
-function vvToString(vv: any){
-    return vv.toJson();
-}
+import { client } from '@concordant/c-client';
 
 export class GList{
     // CRDTlib objects declared as "any" to workaround
@@ -11,11 +8,10 @@ export class GList{
     private env: any; //crdtlib.utils.Environment;
     // the RGA
     private elementsRGA: any; //: crdtlib.crdt.RGA;
+    private session : any;
 
     // whole list component
     private glist: HTMLElement;
-    // version vector
-    private gVV: Text;
     // displayed list, with delete buttons
     private gul: HTMLElement;
     // input text (value to be inserted)
@@ -25,9 +21,9 @@ export class GList{
     // insert
     private ginbtn: HTMLInputElement;
 
-    constructor(env: crdtlib.utils.Environment){
-        this.env = env;
-        this.elementsRGA = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("RGA", this.env);
+    constructor(session: any, collection: any){
+        this.session = session;
+        this.elementsRGA = collection.open("myrga", "RGA", false, function () {return});
 
         this.glist = document.createElement("div");
 
@@ -43,8 +39,6 @@ export class GList{
             "click",
             (e:Event) => this.render());
 
-        // current Version Vector (debug).
-        this.gVV = this.glist.appendChild(document.createTextNode(""));
         this.gul = this.glist.appendChild(document.createElement("ul"));
 
         this.gintext = this.glist.appendChild(
@@ -103,9 +97,10 @@ export class GList{
      * @param value - The content of the line
      */
     public append(value: string){
-        this.elementsRGA.insertAt(this.elementsRGA.get().size, value);
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.elementsRGA.insertAt(this.elementsRGA.get().size, value);
+        })
         this.gul.appendChild(this.newLine(value));
-        this.update();
     }
 
     /**
@@ -117,9 +112,10 @@ export class GList{
     public insertAt(index: number, value: string){
         let lis = this.gul.children;
         let ref = index < lis.length ? lis[index] : null;
-        this.elementsRGA.insertAt(index, value);
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.elementsRGA.insertAt(index, value);
+        })
         this.gul.insertBefore(this.newLine(value), ref);
-        this.update();
     }
 
     /**
@@ -162,11 +158,11 @@ export class GList{
         if (! parentList)
             throw new Error("line has no parent. "
                 + "Are you trying to make me kill an orphan ?")
-        let index = Array.prototype.indexOf.call(
-            parentList.children, line);
-        this.elementsRGA.removeAt(index);
+        let index = Array.prototype.indexOf.call(parentList.children, line);
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.elementsRGA.removeAt(index);
+        })
         line.remove();
-        this.update();
     }
 
     /**
@@ -175,7 +171,6 @@ export class GList{
      * @returns the whole component
      */
     public render(): HTMLElement{
-        this.gVV.nodeValue = vvToString(this.getState().vv);
         // clear list
         // let gul = this.gul.cloneNode(false);
         // this.gul.parentNode.replaceChild(ngul, this.gul);
@@ -185,62 +180,12 @@ export class GList{
         // then populate :
         // convert to Array to workaround
         // [#32](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/32)
-        let iterator = this.elementsRGA.iterator()
-        while (iterator.hasNext()){
-            this.gul.appendChild(this.newLine(iterator.next()));
-        }
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            let iterator = this.elementsRGA.iterator()
+            while (iterator.hasNext()){
+                this.gul.appendChild(this.newLine(iterator.next()));
+            }
+        })
         return this.glist;
-    }
-
-    /**
-     * Update the displayed Version Vector after a change.
-     */
-    private update(){
-        this.gVV.nodeValue = vvToString(this.getState().vv);
-    }
-
-    ////////// Synchronization methods //////////
-
-    /**
-     * Get current state: RGA & current version vector
-     *
-     * @remarks
-     * There should be an interface containing both.
-     *
-     * @returns the current (full) state
-     */
-    public getState(): {delta: crdtlib.crdt.RGA,
-                        vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsRGA, vv: this.env.getState()};
-    }
-
-    /**
-     * Compute a delta from a given version vector
-     *
-     * @param vv - current version vector of another replica,
-     * used as origin for the delta
-     * @returns the generated delta, with current version vector
-     * (same structure as {@link RGASimpleList.getState})
-     */
-    public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT,
-     vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsRGA.generateDelta(vv),
-                vv: this.env.getState()};
-    }
-
-    /**
-     * Merge a delta or state into this replica
-     *
-     * @param delta - the delta, as returned
-     * by {@link RGASimpleList.getState}
-     * or {@link RGASimpleList.getDeltaFrom}
-     */
-    public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT,
-                  vv: crdtlib.crdt.VersionVector}){
-        this.elementsRGA.merge(delta.delta);
-        this.env.updateVv(delta.vv);
-        this.render();
     }
 }

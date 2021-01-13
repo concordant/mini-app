@@ -1,8 +1,5 @@
 import { crdtlib } from '@concordant/c-crdtlib';
-
-function vvToString(vv: any){
-    return vv.toJson();
-}
+import { client } from '@concordant/c-client';
 
 export class MVRegister{
     // CRDTlib objects declared as "any" to workaround
@@ -11,11 +8,10 @@ export class MVRegister{
     private env: any; //crdtlib.utils.Environment;
     // the MVRegister
     private elementsMVRegister: any; //: crdtlib.crdt.MVRegister;
+    private session: any
 
     // whole list component
     private gElem: HTMLElement;
-    // version vector
-    private gVV: Text;
     // displayed register value
     private gDisplay: Text;
     // input value
@@ -23,9 +19,9 @@ export class MVRegister{
     // insert
     private gInBtn: HTMLInputElement;
 
-    constructor(env: crdtlib.utils.Environment){
-        this.env = env;
-        this.elementsMVRegister = crdtlib.crdt.DeltaCRDTFactory.Companion.createDeltaCRDT("MVRegister", this.env);
+    constructor(session: any, collection: any){
+        this.session = session;
+        this.elementsMVRegister = collection.open("mymvregister", "MVRegister", false, function () {return});
 
         this.gElem = document.createElement("div");
 
@@ -33,15 +29,15 @@ export class MVRegister{
             document.createElement("input"));
         refreshBtn.type = "button";
         refreshBtn.value = "Refresh";
-        refreshBtn.addEventListener(
-            "click",
-            (e:Event) => this.render());
+        refreshBtn.addEventListener("click", (e:Event) => this.render());
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
 
-        this.gVV = this.gElem.appendChild(document.createTextNode(""));
-        this.gElem.appendChild(document.createElement("br"));
-        this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createTextNode("Register value : "));
-        this.gDisplay = this.gElem.appendChild(document.createTextNode(this.elementsMVRegister.get()));
+        this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+        }) 
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
 
@@ -70,8 +66,10 @@ export class MVRegister{
      * @remarks triggered by the "Add" button onclick
      */
     public insert(value: string){
-        this.elementsMVRegister.set(value);
-        this.gDisplay.nodeValue=this.elementsMVRegister.get();
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.elementsMVRegister.set(value);
+            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+        })
     }
 
     /**
@@ -80,62 +78,9 @@ export class MVRegister{
      * @returns the whole component
      */
     public render(): HTMLElement{
-        this.gVV.nodeValue = vvToString(this.getState().vv);
-        this.gDisplay.nodeValue=this.elementsMVRegister.get();
+        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+        })
         return this.gElem;
-    }
-
-    /**
-     * Update the displayed Version Vector after a change.
-     *
-     * Must be called by every user-facing method modifying state
-     */
-    private update(){
-        this.gVV.nodeValue = vvToString(this.getState().vv);
-    }
-
-    ////////// Synchronization methods //////////
-
-    /**
-     * Get current state: MVRegister & current version vector
-     *
-     * @remarks
-     * There should be an interface containing both.
-     *
-     * @returns the current (full) state
-     */
-    public getState(): {delta: crdtlib.crdt.MVRegister,
-                        vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsMVRegister, vv: this.env.getState()};
-    }
-
-    /**
-     * Compute a delta from a given version vector
-     *
-     * @param vv - current version vector of another replica,
-     * used as origin for the delta
-     * @returns the generated delta, with current version vector
-     * (same structure as {@link MVRegister.getState})
-     */
-    public getDeltaFrom(vv: crdtlib.crdt.VersionVector):
-    {delta: crdtlib.crdt.DeltaCRDT,
-     vv: crdtlib.crdt.VersionVector}{
-        return {delta: this.elementsMVRegister.generateDelta(vv),
-                vv: this.env.getState()};
-    }
-
-    /**
-     * Merge a delta or state into this replica
-     *
-     * @param delta - the delta, as returned
-     * by {@link MVRegister.getState}
-     * or {@link MVRegister.getDeltaFrom}
-     */
-    public merge(delta:
-                 {delta: crdtlib.crdt.DeltaCRDT,
-                  vv: crdtlib.crdt.VersionVector}){
-        this.elementsMVRegister.merge(delta.delta);
-        this.env.updateVv(delta.vv);
-        this.render();
     }
 }

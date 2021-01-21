@@ -1,6 +1,6 @@
 {
   "name": "mini-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Demo app for Concordant",
   "main": "src/main.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "Annette Bieniusa",
   "license": "MIT",
   "dependencies": {
-    "@concordant/c-crdtlib": "^1.0.1",
-    "@concordant/c-client": "^0.0.1"
+    "@concordant/c-crdtlib": "^1.0.2",
+    "@concordant/c-client": "^1.0.0"
   },
   "devDependencies": {
     "browserify": "^16.5.1",

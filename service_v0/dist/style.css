@@ -1,0 +1,53 @@
+html {
+    max-width: 60%;
+    margin: auto;
+    background-color: white;
+    overflow-x: hidden;
+}
+
+body {
+    text-align: center;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+.full-background {
+    margin: 0 -9999rem;
+    padding: 0.25rem 9999rem;
+}
+
+.padding {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.title {
+    height: 150px;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    margin-top: -10px;
+}
+
+.background-turquoise {
+    background-color: #34D6D8;
+}
+
+.background-grey {
+    background-color: #F4F4F4;
+}
+
+.background-yellow {
+    background-color: #FFE840;
+}
+
+.footer {
+    text-align: center;
+    font-size: 11px;
+    color: grey;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}

@@ -19,27 +19,16 @@ export class MVRegister{
     // insert
     private gInBtn: HTMLInputElement;
 
-    constructor(session: any, collection: any){
+    // refresh checkbox
+    private refreshBox: HTMLInputElement;
+    // keep the id value returned by setInterval()
+    private timer: number | undefined;
+
+    constructor(session: any, collection: any) {
         this.session = session;
         this.elementsMVRegister = collection.open("mymvregister", "MVRegister", false, function () {return});
 
         this.gElem = document.createElement("div");
-
-        let refreshBtn = this.gElem.appendChild(
-            document.createElement("input"));
-        refreshBtn.type = "button";
-        refreshBtn.value = "Refresh";
-        refreshBtn.addEventListener("click", (e:Event) => this.render());
-        this.gElem.appendChild(document.createElement("br"));
-        this.gElem.appendChild(document.createElement("br"));
-
-        this.gElem.appendChild(document.createTextNode("Register value : "));
-        this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
-            this.gDisplay.nodeValue=this.elementsMVRegister.get();
-        }) 
-        this.gElem.appendChild(document.createElement("br"));
-        this.gElem.appendChild(document.createElement("br"));
 
         this.gInValue = this.gElem.appendChild(
             document.createElement("input"));
@@ -58,8 +47,54 @@ export class MVRegister{
         this.gInValue.addEventListener("keyup", (e:KeyboardEvent) => {
             if (e.keyCode === 13) { this.gInBtn.click(); }
         });
+
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+
+        this.refreshBox = this.gElem.appendChild(
+            document.createElement("input")
+        );
+        this.refreshBox.type = "checkbox";
+        this.refreshBox.id = "mvregister-auto-refresh";
+        this.refreshBox.value = "auto-refresh";
+        this.refreshBox.addEventListener(
+            "change",
+             (event: Event) => this.onChangeCheckbox()
+        );
+        let boxLabel : HTMLLabelElement = this.gElem.appendChild(
+            document.createElement("label")
+        );
+        boxLabel.setAttribute('for', "mvregister-auto-refresh");
+        boxLabel.innerHTML = " Auto-refresh";
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+
+        let refreshBtn = this.gElem.appendChild(
+            document.createElement("input"));
+        refreshBtn.type = "button";
+        refreshBtn.value = "Refresh";
+        refreshBtn.addEventListener("click", (e:Event) => this.render());
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+
+        this.gElem.appendChild(document.createTextNode("Register value : "));
+        this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
+            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+        }) 
     }
 
+    /**
+     * This function manage the auto-refresh.
+     */
+    public onChangeCheckbox () {
+        if (this.refreshBox.checked) {
+            this.timer = setInterval( this.render.bind(this), 1000);
+        } else {
+            clearInterval(this.timer)
+        }
+    }
+    
     /**
      * Insert value
      *

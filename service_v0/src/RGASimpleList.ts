@@ -11,7 +11,7 @@ export class GList{
     private session : any;
 
     // whole list component
-    private glist: HTMLElement;
+    private gElem: HTMLElement;
     // displayed list, with delete buttons
     private gul: HTMLElement;
     // input text (value to be inserted)
@@ -21,38 +21,29 @@ export class GList{
     // insert
     private ginbtn: HTMLInputElement;
 
-    constructor(session: any, collection: any){
+    // refresh checkbox
+    private refreshBox: HTMLInputElement;
+    // keep the id value returned by setInterval()
+    private timer: number | undefined;
+
+    constructor(session: any, collection: any) {
         this.session = session;
         this.elementsRGA = collection.open("myrga", "RGA", false, function () {return});
 
-        this.glist = document.createElement("div");
+        this.gElem = document.createElement("div");
 
-        // refresh button, for debugging purpose:
-        // render from scratch the whole list according to internal state
-        // → should not generate any visible change,
-        //   as each update is already applied separately
-        let refreshBtn = this.glist.appendChild(
-            document.createElement("input"));
-        refreshBtn.type = "button";
-        refreshBtn.value = "Refresh";
-        refreshBtn.addEventListener(
-            "click",
-            (e:Event) => this.render());
-
-        this.gul = this.glist.appendChild(document.createElement("ul"));
-
-        this.gintext = this.glist.appendChild(
+        this.gintext = this.gElem.appendChild(
             document.createElement("input"));
         this.gintext.type = "text";
         this.gintext.placeholder = "Enter Your List Element";
 
-        this.gindex = this.glist.appendChild(
+        this.gindex = this.gElem.appendChild(
             document.createElement("input"));
         this.gindex.type = "text";
         this.gindex.placeholder = "Index";
         this.gindex.style.width="5ch";
 
-        this.ginbtn = this.glist.appendChild(
+        this.ginbtn = this.gElem.appendChild(
             document.createElement("input"));
         this.ginbtn.type = "button";
         this.ginbtn.value = "Add";
@@ -67,6 +58,52 @@ export class GList{
         this.gindex.addEventListener("keyup", (e:KeyboardEvent) => {
             if (e.keyCode === 13) { this.ginbtn.click(); }
         });
+
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+    
+        this.refreshBox = this.gElem.appendChild(
+            document.createElement("input")
+        );
+        this.refreshBox.type = "checkbox";
+        this.refreshBox.id = "rga-auto-refresh";
+        this.refreshBox.value = "auto-refresh";
+        this.refreshBox.addEventListener(
+            "change",
+             (event: Event) => this.onChangeCheckbox()
+        );
+        let boxLabel : HTMLLabelElement = this.gElem.appendChild(
+            document.createElement("label")
+        );
+        boxLabel.setAttribute('for', "rga-auto-refresh");
+        boxLabel.innerHTML = " Auto-refresh";
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+
+        // refresh button, for debugging purpose:
+        // render from scratch the whole list according to internal state
+        // → should not generate any visible change,
+        //   as each update is already applied separately
+        let refreshBtn = this.gElem.appendChild(
+            document.createElement("input"));
+        refreshBtn.type = "button";
+        refreshBtn.value = "Refresh";
+        refreshBtn.addEventListener(
+            "click",
+            (e:Event) => this.render());
+
+        this.gul = this.gElem.appendChild(document.createElement("ul"));
+    }
+
+    /**
+     * This function manage the auto-refresh.
+     */
+    public onChangeCheckbox () {
+        if (this.refreshBox.checked) {
+            this.timer = setInterval( this.render.bind(this), 1000);
+        } else {
+            clearInterval(this.timer)
+        }
     }
 
     /**
@@ -186,6 +223,6 @@ export class GList{
                 this.gul.appendChild(this.newLine(iterator.next()));
             }
         })
-        return this.glist;
+        return this.gElem;
     }
 }

@@ -67,8 +67,8 @@ export class LWWRegister{
      *
      * @remarks triggered by the "Add" button onclick
      */
-    public insert(value: string){
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+    public insert(value: string) {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsLWWRegister.set(value);
         })
         this.gDisplay.nodeValue=value;
@@ -80,7 +80,7 @@ export class LWWRegister{
      * @returns the whole component
      */
     public render(): HTMLElement{
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.gDisplay.nodeValue=this.elementsLWWRegister.get();
         })
         return this.gElem;

@@ -45,7 +45,7 @@ import { LWWMap } from './LWWMap';
 
 const myLWWMap: HTMLElement | null =
     document.getElementById('my_lwwmap');
-if (myLWWMap == null){
+if (myLWWMap == null) {
     throw new Error("my_lwwmap element is missing in DOM");
 }
 
@@ -57,7 +57,7 @@ import { LWWRegister } from './LWWRegister';
 
 const myLWWRegister: HTMLElement | null =
     document.getElementById('my_lwwregister');
-if (myLWWRegister == null){
+if (myLWWRegister == null) {
     throw new Error("my_lwwregister element is missing in DOM");
 }
 
@@ -69,7 +69,7 @@ import { MVRegister } from './MVRegister';
 
 const myMVRegister: HTMLElement | null =
     document.getElementById('my_mvregister');
-if (myMVRegister == null){
+if (myMVRegister == null) {
     throw new Error("my_mvregister element is missing in DOM");
 }
 

@@ -1,7 +1,7 @@
 import { crdtlib } from '@concordant/c-crdtlib';
 import { client } from '@concordant/c-client';
 
-export class LWWMap{
+export class LWWMap {
     // CRDTlib objects declared as "any" to workaround
     // [#29](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/29)
     // environment (clock & version vector)
@@ -73,7 +73,6 @@ export class LWWMap{
         this.selectType = this.gElem.appendChild(
             document.createElement("select"));
         this.selectType.id="mesTypes"
-
         var mapTypes=["String", "Int", "Double", "Boolean"]
         mapTypes.forEach(element => {
             var option = document.createElement("option");
@@ -104,8 +103,8 @@ export class LWWMap{
      *
      * @param type The new value type
      */
-    private setValueType(type:string){
-        switch (type){
+    private setValueType(type:string) {
+        switch (type) {
             case "String":
                 this.gInValue.type = "text";
                 this.gInValue.placeholder = "Enter a string";
@@ -158,7 +157,7 @@ export class LWWMap{
      *
      * @remarks triggered by the "Add" button onclick
      */
-    public insert(){
+    public insert() {
 
         let line : HTMLLIElement = this.gliMap[this.gInKey.value + this.selectType.value];
         let isNew : boolean = false
@@ -171,8 +170,8 @@ export class LWWMap{
         } else {
             line.childNodes[1].textContent = " " + this.gInKey.value + " -> " + this.gInValue.value
         }
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
-            switch (this.selectType.value){
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
+            switch (this.selectType.value) {
                 case "String":
                     this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value);    
                     if (isNew) {
@@ -192,7 +191,7 @@ export class LWWMap{
                     }
                     break;
                 case "Boolean":
-                    if (this.gInValue.value=="true" || this.gInValue.value=="false"){
+                    if (this.gInValue.value=="true" || this.gInValue.value=="false") {
                         this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value);
                         if (isNew) {
                             this.gulBoolean.appendChild(line);
@@ -212,7 +211,7 @@ export class LWWMap{
      * @param key The element key
      * @remarks Triggered by the "X" button onclick
      */
-    public remove(type:string, key:string){
+    public remove(type:string, key:string) {
 
         let line = this.gliMap[key + type]
         delete this.gliMap[key + type]
@@ -223,8 +222,8 @@ export class LWWMap{
                 + "Are you trying to make me kill an orphan ?")
         line.remove();
 
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
-            switch (type){
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
+            switch (type) {
                 case "String":
                     this.elementsLWWMap.deleteString(key);
                     break;
@@ -246,8 +245,7 @@ export class LWWMap{
      *
      * @returns the whole component
      */
-    public render(): HTMLElement{
-
+    public render(): HTMLElement {
         this.gliMap = {}
 
         this.gulString.innerHTML = "";
@@ -255,7 +253,7 @@ export class LWWMap{
         this.gulDouble.innerHTML = "";
         this.gulBoolean.innerHTML = "";
 
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             let iterators = [this.elementsLWWMap.iteratorString(),
                 this.elementsLWWMap.iteratorInt(),
                 this.elementsLWWMap.iteratorDouble(),
@@ -269,7 +267,7 @@ export class LWWMap{
                     let line = this.newLine(type[index],
                                             elem.first, elem.second);
                     this.gliMap[elem.first + type[index]] = line
-                    switch (type[index]){
+                    switch (type[index]) {
                         case "String":
                             this.gulString.appendChild(line);
                             break;

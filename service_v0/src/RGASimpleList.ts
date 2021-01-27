@@ -96,8 +96,8 @@ export class GList{
      *
      * @param value - The content of the line
      */
-    public append(value: string){
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+    public append(value: string) {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsRGA.insertAt(this.elementsRGA.get().size, value);
         })
         this.gul.appendChild(this.newLine(value));
@@ -109,10 +109,10 @@ export class GList{
      * @param index - The index where the line should be inserted
      * @param value - The content of the line
      */
-    public insertAt(index: number, value: string){
+    public insertAt(index: number, value: string) {
         let lis = this.gul.children;
         let ref = index < lis.length ? lis[index] : null;
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsRGA.insertAt(index, value);
         })
         this.gul.insertBefore(this.newLine(value), ref);
@@ -128,7 +128,7 @@ export class GList{
      */
     public insertAtStr(index: string, value: string): string{
         // index vide ou invalide → append
-        if (index == '' || isNaN(Number(index))){
+        if (index == '' || isNaN(Number(index))) {
             this.append(value);
             return '';
         } else {
@@ -142,7 +142,7 @@ export class GList{
      *
      * @remarks triggered by the "Add" button onclick
      */
-    public doInsert(){
+    public doInsert() {
         let i = this.insertAtStr(this.gindex.value, this.gintext.value);
         this.gintext.value = '';
         this.gindex.value = i.toString();
@@ -153,13 +153,13 @@ export class GList{
      *
      * @param line - the line element to remove
      */
-    private remove(line: HTMLElement){
+    private remove(line: HTMLElement) {
         let parentList = line.parentElement;
         if (! parentList)
             throw new Error("line has no parent. "
                 + "Are you trying to make me kill an orphan ?")
         let index = Array.prototype.indexOf.call(parentList.children, line);
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsRGA.removeAt(index);
         })
         line.remove();
@@ -170,7 +170,7 @@ export class GList{
      *
      * @returns the whole component
      */
-    public render(): HTMLElement{
+    public render(): HTMLElement {
         // clear list
         // let gul = this.gul.cloneNode(false);
         // this.gul.parentNode.replaceChild(ngul, this.gul);
@@ -180,9 +180,9 @@ export class GList{
         // then populate :
         // convert to Array to workaround
         // [#32](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/32)
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             let iterator = this.elementsRGA.iterator()
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 this.gul.appendChild(this.newLine(iterator.next()));
             }
         })

@@ -65,8 +65,8 @@ export class MVRegister{
      *
      * @remarks triggered by the "Add" button onclick
      */
-    public insert(value: string){
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+    public insert(value: string) {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsMVRegister.set(value);
             this.gDisplay.nodeValue=this.elementsMVRegister.get();
         })
@@ -78,7 +78,7 @@ export class MVRegister{
      * @returns the whole component
      */
     public render(): HTMLElement{
-        this.session.transaction(client.utils.ConsistencyLevel.RC, () => {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.gDisplay.nodeValue=this.elementsMVRegister.get();
         })
         return this.gElem;

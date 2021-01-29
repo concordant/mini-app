@@ -1,8 +1,8 @@
 import { crdtlib } from '@concordant/c-crdtlib';
 import { client } from '@concordant/c-client';
 
-let session = client.Session.Companion.connect("miniapp", "http://localhost:4000", "credentials");
-//let session = client.Session.Companion.connect("miniapp", "https://demo.concordant.io/c-service", "credentials");
+let CONFIG = require('./config.json');
+let session = client.Session.Companion.connect("sudoku", CONFIG.serviceUrl, "credentials");
 let collection = session.openCollection("miniAppCollection", false);
 
 import { PNCounter } from './PNCounter';

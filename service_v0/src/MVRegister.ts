@@ -89,7 +89,7 @@ export class MVRegister{
      */
     public onChangeCheckbox () {
         if (this.refreshBox.checked) {
-            this.timer = setInterval( this.render.bind(this), 1000);
+            this.timer = window.setInterval( this.render.bind(this), 1000);
         } else {
             clearInterval(this.timer)
         }

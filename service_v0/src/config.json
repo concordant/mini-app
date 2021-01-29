@@ -1,5 +1,5 @@
 {
-    "dbname": "miniapp",
+    "dbName": "miniapp",
     "serviceUrl": "http://localhost:4000",
     "credentials": "credentials"
 }

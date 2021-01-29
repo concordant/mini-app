@@ -2,7 +2,7 @@ import { crdtlib } from '@concordant/c-crdtlib';
 import { client } from '@concordant/c-client';
 
 let CONFIG = require('./config.json');
-let session = client.Session.Companion.connect("sudoku", CONFIG.serviceUrl, "credentials");
+let session = client.Session.Companion.connect(CONFIG.dbName, CONFIG.serviceUrl, CONFIG.credentials);
 let collection = session.openCollection("miniAppCollection", false);
 
 import { PNCounter } from './PNCounter';

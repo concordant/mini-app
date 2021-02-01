@@ -13,7 +13,7 @@ export class PNCounter{
     // root div of our crdt
     private gElem: HTMLElement;
     // displayed counter value
-    private gDisplay: Text;
+    private gDisplay: HTMLSpanElement;
     // increment button
     private gPlusBtn: HTMLInputElement;
     // decrement button
@@ -69,9 +69,10 @@ export class PNCounter{
         this.gElem.appendChild(document.createElement("br"));
         
         this.gElem.appendChild(document.createTextNode("Counter value: "));
-        this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
+        this.gDisplay = this.gElem.appendChild(document.createElement("span"));
+        this.gDisplay.className = "longValue";
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsPNCounter.get();
+            this.gDisplay.innerHTML=this.elementsPNCounter.get();
         }) 
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
@@ -89,7 +90,7 @@ export class PNCounter{
     /**
      * This function manage the auto-refresh.
      */
-    private onChangeCheckbox () {
+    private onChangeCheckbox() {
         if (this.refreshBox.checked) {
             this.timer = window.setInterval( this.render.bind(this), 1000);
         } else {
@@ -103,7 +104,7 @@ export class PNCounter{
     private incrLabel() {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsPNCounter.increment(1);
-            this.gDisplay.nodeValue=this.elementsPNCounter.get()
+            this.gDisplay.innerHTML = this.elementsPNCounter.get()
         })
     }
     
@@ -113,7 +114,7 @@ export class PNCounter{
     private decrLabel() {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsPNCounter.decrement(1);
-            this.gDisplay.nodeValue=this.elementsPNCounter.get()
+            this.gDisplay.innerHTML = this.elementsPNCounter.get()
         })
     }
 
@@ -122,9 +123,9 @@ export class PNCounter{
      *
      * @returns the whole component
      */
-    public render(): HTMLElement{
+    public render(): HTMLElement {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsPNCounter.get();
+            this.gDisplay.innerHTML = this.elementsPNCounter.get();
         })
         return this.gElem;
     }

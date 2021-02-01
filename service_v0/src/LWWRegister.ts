@@ -13,7 +13,7 @@ export class LWWRegister{
     // whole list component
     private gElem: HTMLElement;
     // displayed register value
-    private gDisplay: Text;
+    private gDisplay: HTMLSpanElement;
     // input value
     private gInValue: HTMLInputElement;
     // insert
@@ -80,9 +80,10 @@ export class LWWRegister{
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createTextNode("Register value : "));
-        this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
+        this.gDisplay = this.gElem.appendChild(document.createElement("span"));
+        this.gDisplay.className = "longValue";
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsLWWRegister.get();
+            this.gDisplay.innerHTML = this.elementsLWWRegister.get();
         }) 
     }
 
@@ -106,7 +107,7 @@ export class LWWRegister{
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsLWWRegister.set(value);
         })
-        this.gDisplay.nodeValue=value;
+        this.gDisplay.innerHTML = value;
     }
 
     /**
@@ -114,9 +115,9 @@ export class LWWRegister{
      *
      * @returns the whole component
      */
-    public render(): HTMLElement{
+    public render(): HTMLElement {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsLWWRegister.get();
+            this.gDisplay.innerHTML = this.elementsLWWRegister.get();
         })
         return this.gElem;
     }

@@ -44,6 +44,11 @@ li>input {
     font-size: 1em;
 }
 
+.longValue {
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
 .title {
     height: 150px;
     justify-content: center;

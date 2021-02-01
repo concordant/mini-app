@@ -13,7 +13,7 @@ export class MVRegister{
     // whole list component
     private gElem: HTMLElement;
     // displayed register value
-    private gDisplay: Text;
+    private gDisplay: HTMLSpanElement;
     // input value
     private gInValue: HTMLInputElement;
     // insert
@@ -78,9 +78,10 @@ export class MVRegister{
         this.gElem.appendChild(document.createElement("br"));
 
         this.gElem.appendChild(document.createTextNode("Register value : "));
-        this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
+        this.gDisplay = this.gElem.appendChild(document.createElement("span"));
+        this.gDisplay.className = "longValue";
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+            this.gDisplay.innerHTML=this.elementsMVRegister.get();
         }) 
     }
 
@@ -103,7 +104,7 @@ export class MVRegister{
     private insert(value: string) {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsMVRegister.set(value);
-            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+            this.gDisplay.innerHTML=this.elementsMVRegister.get();
         })
     }
 
@@ -114,7 +115,7 @@ export class MVRegister{
      */
     public render(): HTMLElement{
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+            this.gDisplay.innerHTML=this.elementsMVRegister.get();
         })
         return this.gElem;
     }

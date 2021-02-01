@@ -23,6 +23,27 @@ h1, h2 {
     padding-bottom: 30px;
 }
 
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
+li>input {
+    color: red;
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    font-size: 1em;
+}
+
 .title {
     height: 150px;
     justify-content: center;

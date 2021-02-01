@@ -89,7 +89,7 @@ export class LWWRegister{
     /**
      * This function manage the auto-refresh.
      */
-    public onChangeCheckbox () {
+    private onChangeCheckbox () {
         if (this.refreshBox.checked) {
             this.timer = window.setInterval( this.render.bind(this), 1000);
         } else {
@@ -102,7 +102,7 @@ export class LWWRegister{
      *
      * @remarks triggered by the "Add" button onclick
      */
-    public insert(value: string) {
+    private insert(value: string) {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsLWWRegister.set(value);
         })

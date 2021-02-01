@@ -98,7 +98,7 @@ export class GList{
     /**
      * This function manage the auto-refresh.
      */
-    public onChangeCheckbox () {
+    private onChangeCheckbox () {
         if (this.refreshBox.checked) {
             this.timer = window.setInterval( this.render.bind(this), 1000);
         } else {
@@ -133,7 +133,7 @@ export class GList{
      *
      * @param value - The content of the line
      */
-    public append(value: string) {
+    private append(value: string) {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsRGA.insertAt(this.elementsRGA.get().size, value);
         })
@@ -146,7 +146,7 @@ export class GList{
      * @param index - The index where the line should be inserted
      * @param value - The content of the line
      */
-    public insertAt(index: number, value: string) {
+    private insertAt(index: number, value: string) {
         let lis = this.gul.children;
         let ref = index < lis.length ? lis[index] : null;
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
@@ -163,7 +163,7 @@ export class GList{
      * @param value - The content of the line
      * @returns the next index if index was a number, else an empty string
      */
-    public insertAtStr(index: string, value: string): string{
+    private insertAtStr(index: string, value: string): string {
         // index vide ou invalide → append
         if (index == '' || isNaN(Number(index))) {
             this.append(value);
@@ -179,10 +179,10 @@ export class GList{
      *
      * @remarks triggered by the "Add" button onclick
      */
-    public doInsert() {
+    private doInsert() {
         let i = this.insertAtStr(this.gindex.value, this.gintext.value);
         this.gintext.value = '';
-        this.gindex.value = i.toString();
+        this.gindex.value = i;
     }
 
     /**

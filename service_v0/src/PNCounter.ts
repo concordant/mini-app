@@ -89,7 +89,7 @@ export class PNCounter{
     /**
      * This function manage the auto-refresh.
      */
-    public onChangeCheckbox () {
+    private onChangeCheckbox () {
         if (this.refreshBox.checked) {
             this.timer = window.setInterval( this.render.bind(this), 1000);
         } else {
@@ -100,7 +100,7 @@ export class PNCounter{
     /**
      * This function is executed whenever the user clicks the increment button.
      */
-    public incrLabel() {
+    private incrLabel() {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsPNCounter.increment(1);
             this.gDisplay.nodeValue=this.elementsPNCounter.get()
@@ -110,7 +110,7 @@ export class PNCounter{
     /**
      * This function is executed whenever the user clicks the decrement button.
      */
-    public decrLabel() {
+    private decrLabel() {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             this.elementsPNCounter.decrement(1);
             this.gDisplay.nodeValue=this.elementsPNCounter.get()

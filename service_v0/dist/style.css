@@ -1,21 +1,14 @@
-html {
-    max-width: 60%;
-    margin: auto;
-    background-color: white;
-    overflow-x: hidden;
-}
-
 body {
+    background-color: white;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    margin: 0px;
     text-align: center;
 }
 
 h1, h2 {
     text-align: center;
-}
-
-.full-background {
-    margin: 0 -9999rem;
-    padding: 0.25rem 9999rem;
 }
 
 .padding {
@@ -28,9 +21,8 @@ ul {
     padding-left: 0;
 }
 
-li {
+ul li {
     word-wrap: break-word;
-    max-width: 100%;
 }
 
 li>input {
@@ -39,14 +31,19 @@ li>input {
     background-repeat:no-repeat;
     border: none;
     cursor:pointer;
-    overflow: hidden;
     outline:none;
     font-size: 1em;
 }
 
 .longValue {
     word-wrap: break-word;
-    max-width: 100%;
+    max-width: 60%;
+}
+
+.reduceWidth {
+    max-width: 60%;
+    text-align: center;
+    display: inline-block
 }
 
 .title {

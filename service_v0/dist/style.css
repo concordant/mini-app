@@ -1,11 +1,9 @@
-html {
-    max-width: 60%;
-    margin: auto;
-    background-color: white;
-    overflow-x: hidden;
-}
-
 body {
+    background-color: white;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    margin: 0px;
     text-align: center;
 }
 
@@ -13,14 +11,39 @@ h1, h2 {
     text-align: center;
 }
 
-.full-background {
-    margin: 0 -9999rem;
-    padding: 0.25rem 9999rem;
-}
-
 .padding {
     padding-top: 30px;
     padding-bottom: 30px;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul li {
+    word-wrap: break-word;
+}
+
+li>input {
+    color: red;
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    outline:none;
+    font-size: 1em;
+}
+
+.longValue {
+    word-wrap: break-word;
+    max-width: 60%;
+}
+
+.reduceWidth {
+    max-width: 60%;
+    text-align: center;
+    display: inline-block
 }
 
 .title {

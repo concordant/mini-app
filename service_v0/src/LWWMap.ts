@@ -12,17 +12,8 @@ export class LWWMap {
 
     // whole list component
     private gElem: HTMLElement;
-    // displayed string list, with delete buttons
-    private gulString: HTMLElement;
-    // displayed integer list, with delete buttons
-    private gulInt: HTMLElement;
-    // displayed double list, with delete buttons
-    private gulDouble: HTMLElement;
-    // displayed boolean list, with delete buttons
-    private gulBoolean: HTMLElement;
-
-    // keep track of HTML lines for update operations on existent keys
-    private gliMap: any = {};
+    // array of displayed list, with delete buttons
+    private gulMap: any = {};
 
     // input key
     private gInKey: HTMLInputElement;
@@ -116,19 +107,19 @@ export class LWWMap {
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createTextNode("String values :"));
-        this.gulString = this.gElem.appendChild(document.createElement("ul"));
+        this.gulMap["String"] = this.gElem.appendChild(document.createElement("ul"));
         this.gElem.appendChild(document.createTextNode("Integer values :"));
-        this.gulInt = this.gElem.appendChild(document.createElement("ul"));
+        this.gulMap["Int"] = this.gElem.appendChild(document.createElement("ul"));
         this.gElem.appendChild(document.createTextNode("Double values :"));
-        this.gulDouble = this.gElem.appendChild(document.createElement("ul"));
+        this.gulMap["Double"] = this.gElem.appendChild(document.createElement("ul"));
         this.gElem.appendChild(document.createTextNode("Boolean values :"));
-        this.gulBoolean = this.gElem.appendChild(document.createElement("ul"));
+        this.gulMap["Boolean"] = this.gElem.appendChild(document.createElement("ul"));
     }
 
     /**
      * This function manage the auto-refresh.
      */
-    public onChangeCheckbox () {
+    private onChangeCheckbox () {
         if (this.refreshBox.checked) {
             this.timer = window.setInterval( this.render.bind(this), 1000);
         } else {
@@ -195,71 +186,39 @@ export class LWWMap {
      *
      * @remarks triggered by the "Add" button onclick
      */
-    public insert() {
-
-        let line : HTMLLIElement = this.gliMap[this.gInKey.value + this.selectType.value];
-        let isNew : boolean = false
-        if (line == undefined) {
-            line = this.newLine(this.selectType.value,
-                this.gInKey.value,
-                this.gInValue.value);
-            this.gliMap[this.gInKey.value + this.selectType.value] = line
-            isNew = true
-        } else {
-            line.childNodes[1].textContent = " " + this.gInKey.value + " -> " + this.gInValue.value
-        }
+    private insert() {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             switch (this.selectType.value) {
                 case "String":
                     this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value);    
-                    if (isNew) {
-                        this.gulString.appendChild(line);
-                    }
                     break;
                 case "Int":
                     this.elementsLWWMap.setInt(this.gInKey.value, this.gInValue.value);
-                    if (isNew) {
-                        this.gulInt.appendChild(line);
-                    }
                     break;
                 case "Double":
                     this.elementsLWWMap.setDouble(this.gInKey.value, this.gInValue.value);
-                    if (isNew) {
-                        this.gulDouble.appendChild(line);
-                    }
                     break;
                 case "Boolean":
                     if (this.gInValue.value=="true" || this.gInValue.value=="false") {
                         this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value);
-                        if (isNew) {
-                            this.gulBoolean.appendChild(line);
-                        }
                     }
                     break;
             }
         })
+        this.renderType(this.selectType.value);
         this.gInKey.value="";
         this.gInValue.value="";
     }
 
     /**
-     * Remove a line and the corresponding element in the map.
+     * Remove an element in the map and update the corresponding list.
      *
      * @param type The value type
      * @param key The element key
+     *
      * @remarks Triggered by the "X" button onclick
      */
-    public remove(type:string, key:string) {
-
-        let line = this.gliMap[key + type]
-        delete this.gliMap[key + type]
-
-        let parentList = line.parentElement;
-        if (! parentList)
-            throw new Error("line has no parent. "
-                + "Are you trying to make me kill an orphan ?")
-        line.remove();
-
+    private remove(type: string, key: string) {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
             switch (type) {
                 case "String":
@@ -276,52 +235,50 @@ export class LWWMap {
                     break;
             }
         })
+        this.renderType(type);
     }
 
     /**
-     * Update the DOM with the lists contents and the new version vector.
+     * Update the DOM with the lists contents.
+     *
+     * @param type type of the list to be updated.
+     */
+    private renderType(type: string) {
+        this.gulMap[type].innerHTML = "";
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
+            let iterator: any;
+            switch (type) {
+                case "String":
+                    iterator = this.elementsLWWMap.iteratorString();
+                    break;
+                case "Int":
+                    iterator = this.elementsLWWMap.iteratorInt();
+                    break;
+                case "Double":
+                    iterator = this.elementsLWWMap.iteratorDouble();
+                    break;
+                case "Boolean":
+                    iterator = this.elementsLWWMap.iteratorBoolean();
+                    break;
+            }
+            while (iterator.hasNext()) {
+                let elem = iterator.next()
+                let line = this.newLine(type, elem.first, elem.second);
+                this.gulMap[type].appendChild(line);
+            }
+        })
+    }
+
+    /**
+     * Update the DOM with the lists contents.
      *
      * @returns the whole component
      */
     public render(): HTMLElement {
-        this.gliMap = {}
-
-        this.gulString.innerHTML = "";
-        this.gulInt.innerHTML = "";
-        this.gulDouble.innerHTML = "";
-        this.gulBoolean.innerHTML = "";
-
-        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            let iterators = [this.elementsLWWMap.iteratorString(),
-                this.elementsLWWMap.iteratorInt(),
-                this.elementsLWWMap.iteratorDouble(),
-                this.elementsLWWMap.iteratorBoolean()]
-            let type = ["String", "Int", "Double", "Boolean"]
-
-            for (let index in iterators) {
-                let iterator = iterators[index]
-                while (iterator.hasNext()) {
-                    let elem = iterator.next()
-                    let line = this.newLine(type[index],
-                                            elem.first, elem.second);
-                    this.gliMap[elem.first + type[index]] = line
-                    switch (type[index]) {
-                        case "String":
-                            this.gulString.appendChild(line);
-                            break;
-                        case "Int":
-                            this.gulInt.appendChild(line);
-                            break;
-                        case "Double":
-                            this.gulDouble.appendChild(line);
-                            break;
-                        case "Boolean":
-                            this.gulBoolean.appendChild(line);
-                            break;
-                    }
-                }
-            }
-        })
+        this.renderType("String");
+        this.renderType("Int");
+        this.renderType("Double");
+        this.renderType("Boolean");
         return this.gElem;
     }
 }

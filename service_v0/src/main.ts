@@ -1,51 +1,39 @@
 import { crdtlib } from '@concordant/c-crdtlib';
 import { client } from '@concordant/c-client';
 
-let session = client.Session.Companion.connect("miniapp", "credentials");
+let CONFIG = require('./config.json');
+let session = client.Session.Companion.connect(CONFIG.dbName, CONFIG.serviceUrl, CONFIG.credentials);
 let collection = session.openCollection("miniAppCollection", false);
 
-let cntr = collection.open("mycounter", "PNCounter", false, function () {return});
+import { PNCounter } from './PNCounter';
 
-// labels
-var cntlabel_crdt = document.getElementById('cnt_crdt'); // find the HTML element in the DOM
-
-export function incrLabel() {
-    // this function is executed whenever the user clicks the increment button
-    session.transaction(client.utils.ConsistencyLevel.RC, () => {
-        cntr.increment(1);
-        if (cntlabel_crdt){
-            cntlabel_crdt.textContent = cntr.get()
-        }
-    })
+const myPNCounter: HTMLElement | null =
+    document.getElementById('my_pncounter');
+if (myPNCounter == null) {
+    throw new Error("my_pncounter element is missing in DOM");
 }
 
-export function decrLabel() {
-    // this function is executed whenever the user clicks the decrement button
-    session.transaction(client.utils.ConsistencyLevel.RC, () => {
-        cntr.decrement(1);
-        if (cntlabel_crdt){
-            cntlabel_crdt.textContent = cntr.get()
-        }
-    })
-}
+var pncounter = new PNCounter(session, collection);
+
+myPNCounter.appendChild(pncounter.render());
 
 import { GList } from './RGASimpleList';
 
-const listsRoot: HTMLElement | null =
-    document.getElementById('listsRoot');
-if (listsRoot == null){
+const myRGA: HTMLElement | null =
+    document.getElementById('my_rga');
+if (myRGA == null) {
     throw new Error("root element is missing in DOM");
 }
 
 var glA = new GList(session, collection);
 
-listsRoot.appendChild(glA.render());
+myRGA.appendChild(glA.render());
 
 import { LWWMap } from './LWWMap';
 
 const myLWWMap: HTMLElement | null =
     document.getElementById('my_lwwmap');
-if (myLWWMap == null){
+if (myLWWMap == null) {
     throw new Error("my_lwwmap element is missing in DOM");
 }
 
@@ -57,7 +45,7 @@ import { LWWRegister } from './LWWRegister';
 
 const myLWWRegister: HTMLElement | null =
     document.getElementById('my_lwwregister');
-if (myLWWRegister == null){
+if (myLWWRegister == null) {
     throw new Error("my_lwwregister element is missing in DOM");
 }
 
@@ -69,7 +57,7 @@ import { MVRegister } from './MVRegister';
 
 const myMVRegister: HTMLElement | null =
     document.getElementById('my_mvregister');
-if (myMVRegister == null){
+if (myMVRegister == null) {
     throw new Error("my_mvregister element is missing in DOM");
 }
 

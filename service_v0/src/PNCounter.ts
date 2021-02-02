@@ -1,23 +1,23 @@
 import { crdtlib } from '@concordant/c-crdtlib';
 import { client } from '@concordant/c-client';
 
-export class MVRegister{
+export class PNCounter{
     // CRDTlib objects declared as "any" to workaround
     // [#29](https://gitlab.inria.fr/concordant/software/c-crdtlib/-/issues/29)
     // environment (clock & version vector)
     private env: any; //crdtlib.utils.Environment;
-    // the MVRegister
-    private elementsMVRegister: any; //: crdtlib.crdt.MVRegister;
+    // the PNCounter
+    private elementsPNCounter: any; //: crdtlib.crdt.PNCounter;
     private session: any
 
-    // whole list component
+    // root div of our crdt
     private gElem: HTMLElement;
-    // displayed register value
+    // displayed counter value
     private gDisplay: Text;
-    // input value
-    private gInValue: HTMLInputElement;
-    // insert
-    private gInBtn: HTMLInputElement;
+    // increment button
+    private gPlusBtn: HTMLInputElement;
+    // decrement button
+    private gMinusBtn: HTMLInputElement;
 
     // refresh checkbox
     private refreshBox: HTMLInputElement;
@@ -26,36 +26,15 @@ export class MVRegister{
 
     constructor(session: any, collection: any) {
         this.session = session;
-        this.elementsMVRegister = collection.open("mymvregister", "MVRegister", false, function () {return});
+        this.elementsPNCounter = collection.open("mypncounter", "PNCounter", false, function () {return});
 
         this.gElem = document.createElement("div");
-
-        this.gInValue = this.gElem.appendChild(
-            document.createElement("input"));
-        this.gInValue.type = "text";
-        this.gInValue.placeholder = "Enter The Value";
-
-        this.gInBtn = this.gElem.appendChild(
-            document.createElement("input"));
-        this.gInBtn.type = "button";
-        this.gInBtn.value = "Modify value";
-        this.gInBtn.addEventListener(
-            "click",
-            (e:Event) => this.insert(this.gInValue.value));
-
-        // Trigger the button element with a click on "Enter" key
-        this.gInValue.addEventListener("keyup", (e:KeyboardEvent) => {
-            if (e.keyCode === 13) { this.gInBtn.click(); }
-        });
-
-        this.gElem.appendChild(document.createElement("br"));
-        this.gElem.appendChild(document.createElement("br"));
 
         this.refreshBox = this.gElem.appendChild(
             document.createElement("input")
         );
         this.refreshBox.type = "checkbox";
-        this.refreshBox.id = "mvregister-auto-refresh";
+        this.refreshBox.id = "cnt-auto-refresh";
         this.refreshBox.value = "auto-refresh";
         this.refreshBox.addEventListener(
             "change",
@@ -64,24 +43,47 @@ export class MVRegister{
         let boxLabel : HTMLLabelElement = this.gElem.appendChild(
             document.createElement("label")
         );
-        boxLabel.setAttribute('for', "mvregister-auto-refresh");
+        boxLabel.setAttribute('for', "cnt-auto-refresh");
         boxLabel.innerHTML = " Auto-refresh";
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
 
         let refreshBtn = this.gElem.appendChild(
-            document.createElement("input"));
+            document.createElement("input")
+        );
         refreshBtn.type = "button";
         refreshBtn.value = "Refresh";
         refreshBtn.addEventListener("click", (e:Event) => this.render());
         this.gElem.appendChild(document.createElement("br"));
         this.gElem.appendChild(document.createElement("br"));
 
-        this.gElem.appendChild(document.createTextNode("Register value : "));
+        this.gPlusBtn = this.gElem.appendChild(
+            document.createElement("input"));
+        this.gPlusBtn.type = "button";
+        this.gPlusBtn.value = "+";
+        this.gPlusBtn.addEventListener(
+            "click",
+            (event: Event) => this.incrLabel()
+        );
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+        
+        this.gElem.appendChild(document.createTextNode("Counter value: "));
         this.gDisplay = this.gElem.appendChild(document.createTextNode(""));
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+            this.gDisplay.nodeValue=this.elementsPNCounter.get();
         }) 
+        this.gElem.appendChild(document.createElement("br"));
+        this.gElem.appendChild(document.createElement("br"));
+
+        this.gMinusBtn = this.gElem.appendChild(
+            document.createElement("input"));
+        this.gMinusBtn.type = "button";
+        this.gMinusBtn.value = "-";
+        this.gMinusBtn.addEventListener(
+            "click",
+            (e:Event) => this.decrLabel()
+        );
     }
 
     /**
@@ -94,16 +96,24 @@ export class MVRegister{
             clearInterval(this.timer)
         }
     }
+
+    /**
+     * This function is executed whenever the user clicks the increment button.
+     */
+    public incrLabel() {
+        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
+            this.elementsPNCounter.increment(1);
+            this.gDisplay.nodeValue=this.elementsPNCounter.get()
+        })
+    }
     
     /**
-     * Insert value
-     *
-     * @remarks triggered by the "Add" button onclick
+     * This function is executed whenever the user clicks the decrement button.
      */
-    public insert(value: string) {
+    public decrLabel() {
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.elementsMVRegister.set(value);
-            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+            this.elementsPNCounter.decrement(1);
+            this.gDisplay.nodeValue=this.elementsPNCounter.get()
         })
     }
 
@@ -114,7 +124,7 @@ export class MVRegister{
      */
     public render(): HTMLElement{
         this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            this.gDisplay.nodeValue=this.elementsMVRegister.get();
+            this.gDisplay.nodeValue=this.elementsPNCounter.get();
         })
         return this.gElem;
     }

@@ -3,39 +3,57 @@
     <head>
         <meta charset="utf-8" />
         <title>CRDT Mini-App</title>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
+        <div class="title background-turquoise full-background padding">
+            <h1>Mini-app</h1>
+        </div>
 
-        <div id="crdt_list"></div>
+        <div class="padding">
+            <h1>General purpose</h1>
+            <p>
+                let session = client.Session.Companion.connect("miniapp", "http://localhost:4000", "credentials");<br>
+                let collection = session.openCollection("miniAppCollection", false);
+            </p>
+        </div>
 
-        <h1>Counter</h1>
-            <div>
-                <button id="increment" onclick="myBundle.incrLabel()">+</button>
-                <p>CRDT counter:  <b id="cnt_crdt">0</b></p>
-                <button id="decrement" onclick="myBundle.decrLabel()">-</button>
-            </div>
-
-        <h1>RGA</h1>
-            <div id="listsRoot">
-
-            </div>
-
-        <h1>LWWMAP</h1>
-            <div id="my_lwwmap">
-
-            </div>
-
-        <h1>LWWRegister</h1>
-            <div id="my_lwwregister">
-
-            </div>
+        <div class="background-grey full-background padding">
+            <h1>PNCounter</h1>
+            <h2> How to use</h2>
+                <div>
+                    <p id="cnt_desc">
+                        let cntr = collection.open("mycounter", "PNCounter", false, function () {return});
+                    </p>
+                </div>
+            <h2>Example</h2>
+            <div id="my_pncounter"></div>
+        </div>
         
-        <h1>MVRegister</h1>
-            <div id="my_mvregister">
-
-            </div>
-
+        <div class="padding">
+            <h1>RGA</h1>
+            <div id="my_rga"></div>
+        </div>
+        
+        <div class="background-yellow full-background padding">
+            <h1>LWWMAP</h1>
+            <div id="my_lwwmap"></div>
+        </div>
+        
+        <div class="padding">
+            <h1>LWWRegister</h1>
+            <div id="my_lwwregister"></div>
+        </div>
+        
+        <div class="background-turquoise full-background padding">
+            <h1>MVRegister</h1>
+            <div id="my_mvregister"></div>
+        </div>
+            
         <script src="bundle.js"></script>
 
+        <div class="footer">
+            <p>© CONCORDANT 2021.</p>
+        </div>
     </body>
 </html>

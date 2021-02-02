@@ -235,7 +235,7 @@ export class LWWMap {
                     break;
             }
         })
-        this.renderType(this.selectType.value);
+        this.renderType(type);
     }
 
     /**

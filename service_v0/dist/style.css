@@ -1,14 +1,28 @@
 body {
     background-color: white;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 14px;
-    line-height: 1.42857143;
+    line-height: 1.7;
     margin: 0px;
     text-align: center;
 }
 
-h1, h2 {
+h1 {
+    font-size: 34px;
+    line-height: 30px;
     text-align: center;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 26px;
+    text-align: center;
+    font-weight: bold;
+}
+
+p {
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 .padding {
@@ -18,7 +32,11 @@ h1, h2 {
 
 ul {
     list-style-type: none;
-    padding-left: 0;
+    padding-left: 0px;
+}
+
+ol {
+    text-align: left;
 }
 
 ul li {
@@ -41,7 +59,7 @@ li>input {
 }
 
 .reduceWidth {
-    max-width: 60%;
+    width: 60%;
     text-align: center;
     display: inline-block
 }
@@ -53,6 +71,14 @@ li>input {
     flex-direction: column;
     color: white;
     margin-top: -10px;
+}
+
+.intro {
+    padding-bottom: 5px;
+}
+
+.crdt {
+    padding-top: 10px;
 }
 
 .background-turquoise {

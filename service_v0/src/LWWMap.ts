@@ -137,24 +137,24 @@ export class LWWMap {
             case "String":
                 this.gInValue.type = "text";
                 this.gInValue.placeholder = "Enter a string";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
             case "Int":
                 this.gInValue.type = "number";
-                this.gInValue.step="1";
+                this.gInValue.step = "1";
                 this.gInValue.placeholder = "Enter an integer";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
             case "Double":
                 this.gInValue.type = "number";
-                this.gInValue.step="0.01";
+                this.gInValue.step = "0.01";
                 this.gInValue.placeholder = "Enter a double";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
             case "Boolean":
                 this.gInValue.type = "text";
                 this.gInValue.placeholder = "Enter true or false";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
         }
     }

@@ -137,24 +137,24 @@ export class LWWMap {
             case "String":
                 this.gInValue.type = "text";
                 this.gInValue.placeholder = "Enter a string";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
             case "Int":
                 this.gInValue.type = "number";
-                this.gInValue.step="1";
+                this.gInValue.step = "1";
                 this.gInValue.placeholder = "Enter an integer";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
             case "Double":
                 this.gInValue.type = "number";
-                this.gInValue.step="0.01";
+                this.gInValue.step = "0.01";
                 this.gInValue.placeholder = "Enter a double";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
             case "Boolean":
                 this.gInValue.type = "text";
                 this.gInValue.placeholder = "Enter true or false";
-                this.gInValue.value="";
+                this.gInValue.value = "";
                 break;
         }
     }
@@ -187,27 +187,41 @@ export class LWWMap {
      * @remarks triggered by the "Add" button onclick
      */
     private insert() {
-        this.session.transaction(client.utils.ConsistencyLevel.None, () => {
-            switch (this.selectType.value) {
-                case "String":
+        switch (this.selectType.value) {
+            case "String":
+                this.session.transaction(client.utils.ConsistencyLevel.None, () => {
                     this.elementsLWWMap.setString(this.gInKey.value, this.gInValue.value);    
-                    break;
-                case "Int":
+                })
+                break;
+            case "Int":
+                if (this.gInValue.value === '') {
+                    return;
+                }
+                this.session.transaction(client.utils.ConsistencyLevel.None, () => {
                     this.elementsLWWMap.setInt(this.gInKey.value, this.gInValue.value);
-                    break;
-                case "Double":
+                })
+                break;
+            case "Double":
+                if (this.gInValue.value === '') {
+                    return;
+                }
+                this.session.transaction(client.utils.ConsistencyLevel.None, () => {
                     this.elementsLWWMap.setDouble(this.gInKey.value, this.gInValue.value);
-                    break;
-                case "Boolean":
-                    if (this.gInValue.value=="true" || this.gInValue.value=="false") {
-                        this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value);
-                    }
-                    break;
-            }
-        })
+                })
+                break;
+            case "Boolean":
+                if (this.gInValue.value.toLowerCase() != "true" &&
+                    this.gInValue.value.toLowerCase() != "false") {
+                    return;
+                }
+                this.session.transaction(client.utils.ConsistencyLevel.None, () => {
+                    this.elementsLWWMap.setBoolean(this.gInKey.value, this.gInValue.value);
+                })
+                break;
+        }
         this.renderType(this.selectType.value);
-        this.gInKey.value="";
-        this.gInValue.value="";
+        this.gInKey.value = "";
+        this.gInValue.value = "";
     }
 
     /**

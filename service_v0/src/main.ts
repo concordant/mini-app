@@ -64,3 +64,15 @@ if (myMVRegister == null) {
 var mvrg = new MVRegister(session, collection);
 
 myMVRegister.appendChild(mvrg.render());
+
+import { MVMap } from './MVMap';
+
+const myMVMap: HTMLElement | null =
+    document.getElementById('my_mvmap');
+if (myMVMap == null) {
+    throw new Error("my_mvmap element is missing in DOM");
+}
+
+var mvmap = new MVMap(session, collection);
+
+myMVMap.appendChild(mvmap.render());

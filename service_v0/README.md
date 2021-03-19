@@ -26,4 +26,4 @@ $ npm run-script build-tsc
 
 ## Running the Mini-App
 
-Open `dist/index.html` in a browser of your choice (preferably Google Chrome which has great support for debugging).
+Open `dist/index.html` in a browser of your choice.

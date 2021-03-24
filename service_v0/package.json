@@ -4,7 +4,7 @@
   "description": "Demo app for Concordant",
   "main": "src/main.js",
   "scripts": {
-    "build-tsc": "tsc && browserify src/main.js --standalone myBundle -o dist/bundle.js",
+    "prepare": "tsc && browserify src/main.js --standalone myBundle -o dist/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Annette Bieniusa",

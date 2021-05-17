@@ -7,9 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [Unreleased]
   - Added
-    - Add README file in the top-level repository
   - Changed
-    - Update specific README
   - Deprecated
   - Removed
   - Fixed

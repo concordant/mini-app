@@ -19,10 +19,10 @@ To install these packages use the following command:
 $ npm install
 ```
 
-The different steps for transpiling and bundling are combined in one build script:
+The different steps for transpiling and bundling are combined in one build script (it is also run at the end of npm install):
 
 ```
-$ npm run-script build-tsc
+$ npm run prepare
 ```
 
 ## Running the Mini-App
